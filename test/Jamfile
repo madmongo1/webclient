@@ -26,6 +26,7 @@ else
 
 local SOURCES =
     forty_two.cpp
+    get.cpp
     ;
 
 local RUN_TESTS ;

@@ -8,18 +8,17 @@
 //
 
 // Test that header file is self-contained.
-#include <boost/webclient/forty_two.hpp>
-
 #include "test_suite.hpp"
+
+#include <boost/webclient/forty_two.hpp>
 
 namespace boost {
 namespace webclient {
 
 class forty_two_test
 {
-public:
-    void
-    run()
+  public:
+    void run()
     {
         BOOST_TEST(forty_two() == 42);
     }
@@ -27,5 +26,5 @@ public:
 
 TEST_SUITE(forty_two_test, "boost.webclient.forty_two");
 
-} // webclient
-} // boost
+}   // namespace webclient
+}   // namespace boost

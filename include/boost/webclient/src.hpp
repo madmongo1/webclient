@@ -25,6 +25,7 @@ in a translation unit of the program.
 # error Do not compile library source with the header only macro defined
 #endif
 
+#include <boost/webclient/impl/error.ipp>
 #include <boost/webclient/impl/forty_two.ipp>
 
 #endif

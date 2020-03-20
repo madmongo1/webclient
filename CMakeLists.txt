@@ -73,7 +73,7 @@ elseif(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     # or when producing Visual Studio Solution and Projects
     #
     if(${CMAKE_VERSION} VERSION_LESS 3.16)
-        message(FATAL_ERROR "Boost.LibraryTemplate development requires CMake 3.16 or newer.")
+        message(FATAL_ERROR "Boost.WebClient development requires CMake 3.16 or newer.")
     endif()
 
     if (HUNTER_ENABLED)
@@ -121,4 +121,8 @@ else()
         add_subdirectory(test)
     endif()
 
+endif()
+
+if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows" OR ${CMAKE_SYSTEM_NAME} STREQUAL "MSYS")
+    target_link_libraries(boost_webclient INTERFACE winhttp)
 endif()

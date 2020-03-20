@@ -32,26 +32,38 @@ using error_category = boost::system::error_category;
 /// The type of error condition used by the library.
 using error_condition = boost::system::error_condition;
 
-#ifdef BOOST_WEBCLIENT_DOCS
+#    define BOOST_WEBCLIENT_OPEN_SYSTEM_NAMESPACE                              \
+        namespace boost {                                                      \
+        namespace system {
+
+#    define BOOST_WEBCLIENT_CLOSE_SYSTEM_NAMESPACE                             \
+        }                                                                      \
+        }
+
+#    ifdef BOOST_WEBCLIENT_DOCS
 /// Returns the generic error category used by the library.
-error_category const&
-generic_category();
-#else
+error_category const &generic_category();
+#    else
 using boost::system::generic_category;
-#endif
+using boost::system::system_category;
+#    endif
 
 #else
 
-using error_code = std::error_code;
-using error_category = std::error_category;
+using error_code      = std::error_code;
+using error_category  = std::error_category;
 using error_condition = std::error_condition;
-using string_view = std::string_view;
-using system_error = std::system_error;
+using string_view     = std::string_view;
+using system_error    = std::system_error;
 using std::generic_category;
+using std::system_category;
+
+#    define BOOST_WEBCLIENT_OPEN_SYSTEM_NAMESPACE namespace std {
+#    define BOOST_WEBCLIENT_CLOSE_SYSTEM_NAMESPACE }
 
 #endif
 
-} // webclient
-} // boost
+}   // namespace webclient
+}   // namespace boost
 
 #endif
