@@ -20,7 +20,7 @@
       <entry valign="top">
         <bridgehead renderas="sect3">Functions</bridgehead>
         <simplelist type="vert" columns="1">
-          <member><link linkend="library_template.ref.boost__library_template__forty_two">forty_two</link></member>
+          <member><link linkend="webclient.ref.boost__webclient__forty_two">forty_two</link></member>
         </simplelist>
       </entry>
     </row></tbody>

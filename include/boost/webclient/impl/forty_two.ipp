@@ -4,16 +4,16 @@
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
-// Official repository: https://github.com/vinniefalco/library_template
+// Official repository: https://github.com/madmongo1/webclient
 //
 
-#ifndef BOOST_LIBRARY_TEMPLATE_IMPL_FORTY_TWO_IPP
-#define BOOST_LIBRARY_TEMPLATE_IMPL_FORTY_TWO_IPP
+#ifndef BOOST_WEBCLIENT_IMPL_FORTY_TWO_IPP
+#define BOOST_WEBCLIENT_IMPL_FORTY_TWO_IPP
 
-#include <boost/library_template/forty_two.hpp>
+#include <boost/webclient/forty_two.hpp>
 
 namespace boost {
-namespace library_template {
+namespace webclient {
 
 int
 forty_two() noexcept
@@ -21,7 +21,7 @@ forty_two() noexcept
     return 42;
 }
 
-} // library_template
+} // webclient
 } // boost
 
 #endif

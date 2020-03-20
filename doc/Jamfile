@@ -4,10 +4,10 @@
 # Distributed under the Boost Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #
-# Official repository: https://github.com/vinniefalco/library_template
+# Official repository: https://github.com/madmongo1/webclient
 #
 
-project library_template/doc ;
+project webclient/doc ;
 
 import os ;
 import path ;
@@ -26,7 +26,7 @@ import common ;
 # docs can be rebuild if any of the header files change.
 #
 
-local sources = [ path.glob-tree ../include/boost/library_template : *.hpp *.ipp : detail impl ] ;
+local sources = [ path.glob-tree ../include/boost/webclient : *.hpp *.ipp : detail impl ] ;
 
 # Get the configured paths to doxygen and xsltproc
 
@@ -252,7 +252,7 @@ install images
     :
         #images/message.png
     :
-        <location>html/library_template/images
+        <location>html/webclient/images
     ;
 
 explicit images ;
@@ -273,7 +273,7 @@ explicit beast_doc ;
 #
 #-------------------------------------------------------------------------------
 
-boostbook library_template
+boostbook webclient
     :
         beast_doc
     :
@@ -299,5 +299,5 @@ boostbook library_template
 alias boostdoc ;
 explicit boostdoc ;
 
-alias boostrelease : library_template ;
+alias boostrelease : webclient ;
 explicit boostrelease ;

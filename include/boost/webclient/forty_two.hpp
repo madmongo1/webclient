@@ -7,25 +7,27 @@
 // Official repository: https://github.com/madmongo1/webclient
 //
 
-// Test that header file is self-contained.
-#include <boost/webclient/forty_two.hpp>
+#ifndef BOOST_WEBCLIENT_FORTY_TWO_HPP
+#define BOOST_WEBCLIENT_FORTY_TWO_HPP
 
-#include "test_suite.hpp"
+#include <boost/webclient/detail/config.hpp>
 
 namespace boost {
 namespace webclient {
 
-class forty_two_test
-{
-public:
-    void
-    run()
-    {
-        BOOST_TEST(forty_two() == 42);
-    }
-};
+/** Return the value 42.
 
-TEST_SUITE(forty_two_test, "boost.webclient.forty_two");
+    This function returns an integer equal to 42.
+*/
+BOOST_WEBCLIENT_DECL
+int
+forty_two() noexcept;
 
 } // webclient
 } // boost
+
+#ifdef BOOST_WEBCLIENT_HEADER_ONLY
+#include <boost/webclient/impl/forty_two.ipp>
+#endif
+
+#endif

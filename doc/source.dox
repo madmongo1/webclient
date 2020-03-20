@@ -3,7 +3,7 @@
 #---------------------------------------------------------------------------
 
 INPUT = \
-        $(LIB_DIR)/include/boost/library_template/
+        $(LIB_DIR)/include/boost/webclient/
 
 ALIASES                =
 INPUT_ENCODING         = UTF-8
@@ -34,9 +34,9 @@ INCLUDE_PATH           = ../
 INCLUDE_FILE_PATTERNS  =
 
 PREDEFINED             = \
-                        BOOST_LIBRARY_TEMPLATE_DECL \
-                        BOOST_LIBRARY_TEMPLATE_DOCS \
-                        BOOST_LIBRARY_TEMPLATE_PUBLIC \
+                        BOOST_WEBCLIENT_DECL \
+                        BOOST_WEBCLIENT_DOCS \
+                        BOOST_WEBCLIENT_PUBLIC \
                         BOOST_SYMBOL_VISIBLE
 
 EXPAND_AS_DEFINED      =

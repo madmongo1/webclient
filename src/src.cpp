@@ -4,9 +4,9 @@
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
-// Official repository: https://github.com/vinniefalco/library_template
+// Official repository: https://github.com/madmongo1/webclient
 //
 
-#ifndef BOOST_LIBRARY_TEMPLATE_HEADER_ONLY
-#include <boost/library_template/src.hpp>
+#ifndef BOOST_WEBCLIENT_HEADER_ONLY
+#include <boost/webclient/src.hpp>
 #endif

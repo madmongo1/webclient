@@ -4,18 +4,18 @@
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
-// Official repository: https://github.com/vinniefalco/library_template
+// Official repository: https://github.com/madmongo1/webclient
 //
 
-#ifndef BOOST_LIBRARY_TEMPLATE_CONFIG_HPP
-#define BOOST_LIBRARY_TEMPLATE_CONFIG_HPP
+#ifndef BOOST_WEBCLIENT_CONFIG_HPP
+#define BOOST_WEBCLIENT_CONFIG_HPP
 
-#include <boost/library_template/detail/config.hpp>
+#include <boost/webclient/detail/config.hpp>
 
 namespace boost {
-namespace library_template {
+namespace webclient {
 
-#ifndef BOOST_LIBRARY_TEMPLATE_STANDALONE
+#ifndef BOOST_WEBCLIENT_STANDALONE
 
 /// The type of string view used by the library.
 using string_view = boost::string_view;
@@ -32,7 +32,7 @@ using error_category = boost::system::error_category;
 /// The type of error condition used by the library.
 using error_condition = boost::system::error_condition;
 
-#ifdef BOOST_LIBRARY_TEMPLATE_DOCS
+#ifdef BOOST_WEBCLIENT_DOCS
 /// Returns the generic error category used by the library.
 error_category const&
 generic_category();
@@ -51,7 +51,7 @@ using std::generic_category;
 
 #endif
 
-} // library_template
+} // webclient
 } // boost
 
 #endif

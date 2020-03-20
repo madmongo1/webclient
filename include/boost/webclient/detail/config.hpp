@@ -4,13 +4,13 @@
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
-// Official repository: https://github.com/vinniefalco/library_template
+// Official repository: https://github.com/madmongo1/webclient
 //
 
-#ifndef BOOST_LIBRARY_TEMPLATE_DETAIL_CONFIG_HPP
-#define BOOST_LIBRARY_TEMPLATE_DETAIL_CONFIG_HPP
+#ifndef BOOST_WEBCLIENT_DETAIL_CONFIG_HPP
+#define BOOST_WEBCLIENT_DETAIL_CONFIG_HPP
 
-#ifndef BOOST_LIBRARY_TEMPLATE_STANDALONE
+#ifndef BOOST_WEBCLIENT_STANDALONE
 # include <boost/config.hpp>
 # include <boost/assert.hpp>
 # include <boost/system/error_code.hpp>
@@ -64,36 +64,36 @@
 #define BOOST_SYMBOL_VISIBLE
 #endif
 
-#ifndef BOOST_LIBRARY_TEMPLATE_STANDALONE
+#ifndef BOOST_WEBCLIENT_STANDALONE
 # if defined(GENERATING_DOCUMENTATION)
-#  define BOOST_LIBRARY_TEMPLATE_DECL
-# elif defined(BOOST_LIBRARY_TEMPLATE_HEADER_ONLY)
-#  define BOOST_LIBRARY_TEMPLATE_DECL inline
+#  define BOOST_WEBCLIENT_DECL
+# elif defined(BOOST_WEBCLIENT_HEADER_ONLY)
+#  define BOOST_WEBCLIENT_DECL inline
 # else
-#  if (defined(BOOST_LIBRARY_TEMPLATE_DYN_LINK) || defined(BOOST_ALL_DYN_LINK)) && !defined(BOOST_LIBRARY_TEMPLATE_STATIC_LINK)
-#   if defined(BOOST_LIBRARY_TEMPLATE_SOURCE)
-#    define BOOST_LIBRARY_TEMPLATE_DECL  BOOST_SYMBOL_EXPORT
-#    define BOOST_LIBRARY_TEMPLATE_BUILD_DLL
+#  if (defined(BOOST_WEBCLIENT_DYN_LINK) || defined(BOOST_ALL_DYN_LINK)) && !defined(BOOST_WEBCLIENT_STATIC_LINK)
+#   if defined(BOOST_WEBCLIENT_SOURCE)
+#    define BOOST_WEBCLIENT_DECL  BOOST_SYMBOL_EXPORT
+#    define BOOST_WEBCLIENT_BUILD_DLL
 #   else
-#    define BOOST_LIBRARY_TEMPLATE_DECL  BOOST_SYMBOL_IMPORT
+#    define BOOST_WEBCLIENT_DECL  BOOST_SYMBOL_IMPORT
 #   endif
 #  endif // shared lib
-#  ifndef  BOOST_LIBRARY_TEMPLATE_DECL
-#   define BOOST_LIBRARY_TEMPLATE_DECL
+#  ifndef  BOOST_WEBCLIENT_DECL
+#   define BOOST_WEBCLIENT_DECL
 #  endif
-#  if !defined(BOOST_LIBRARY_TEMPLATE_SOURCE) && !defined(BOOST_ALL_NO_LIB) && !defined(BOOST_LIBRARY_TEMPLATE_NO_LIB)
-#   define BOOST_LIB_NAME boost_library_template
-#   if defined(BOOST_ALL_DYN_LINK) || defined(BOOST_LIBRARY_TEMPLATE_DYN_LINK)
+#  if !defined(BOOST_WEBCLIENT_SOURCE) && !defined(BOOST_ALL_NO_LIB) && !defined(BOOST_WEBCLIENT_NO_LIB)
+#   define BOOST_LIB_NAME boost_WEBCLIENT
+#   if defined(BOOST_ALL_DYN_LINK) || defined(BOOST_WEBCLIENT_DYN_LINK)
 #    define BOOST_DYN_LINK
 #   endif
 #   include <boost/config/auto_link.hpp>
 #  endif
 # endif
 #else
-# ifdef BOOST_LIBRARY_TEMPLATE_HEADER_ONLY
-#  define BOOST_LIBRARY_TEMPLATE_DECL inline
+# ifdef BOOST_WEBCLIENT_HEADER_ONLY
+#  define BOOST_WEBCLIENT_DECL inline
 # else
-#  define BOOST_LIBRARY_TEMPLATE_DECL
+#  define BOOST_WEBCLIENT_DECL
 # endif
 #endif
 

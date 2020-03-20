@@ -10,6 +10,6 @@
     </xsl:if>
   </xsl:template>
 
-<!--  <xsl:template mode="convenience-header" match="@file[contains(., 'boost/library_template')]">library_template.hpp</xsl:template> -->
+<!--  <xsl:template mode="convenience-header" match="@file[contains(., 'boost/webclient')]">webclient.hpp</xsl:template> -->
   <xsl:template mode="convenience-header" match="@file"/>
 <!-- INCLUDES_FOOT_TEMPLATE END -->
