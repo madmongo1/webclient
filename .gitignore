@@ -1,0 +1,13 @@
+/bin
+/bin64
+temp
+
+# Emacs
+*#
+
+# Vim
+*~
+
+# Visual Studio
+/.vs
+/out

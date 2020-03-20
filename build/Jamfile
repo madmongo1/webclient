@@ -1,0 +1,31 @@
+#
+# Copyright (c) 2020 Vinnie Falco (vinnie.falco@gmail.com)
+#
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+#
+# Official repository: https://github.com/vinniefalco/library_template
+#
+
+project boost/library_template
+    : requirements
+      <link>shared:<define>BOOST_LIBRARY_TEMPLATE_DYN_LINK=1
+      <link>static:<define>BOOST_LIBRARY_TEMPLATE_STATIC_LINK=1
+      <define>BOOST_LIBRARY_TEMPLATE_SOURCE
+    : usage-requirements
+      <link>shared:<define>BOOST_LIBRARY_TEMPLATE_DYN_LINK=1
+      <link>static:<define>BOOST_LIBRARY_TEMPLATE_STATIC_LINK=1
+    : source-location ../src
+    ;
+
+alias library_template_sources
+   : src.cpp
+   ;
+
+explicit library_template_sources ;
+
+lib boost_library_template
+   : library_template_sources
+   ;
+
+boost-install boost_library_template ;
