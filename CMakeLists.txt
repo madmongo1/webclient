@@ -50,6 +50,7 @@ endif()
 
 add_library(boost_webclient ${BOOST_WEBCLIENT_HEADERS} ${BOOST_WEBCLIENT_SOURCES})
 add_library(Boost::webclient ALIAS boost_webclient)
+target_link_libraries(boost_webclient PUBLIC Threads::Threads)
 
 target_compile_features(boost_webclient PUBLIC cxx_constexpr)
 
