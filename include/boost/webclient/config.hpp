@@ -11,11 +11,19 @@
 #define BOOST_WEBCLIENT_CONFIG_HPP
 
 #include <boost/webclient/detail/config.hpp>
+#ifndef BOOST_WEBCLIENT_STANDALONE
+namespace boost {
+namespace asio {
+}
+}
+#endif
 
 namespace boost {
 namespace webclient {
 
 #ifndef BOOST_WEBCLIENT_STANDALONE
+
+namespace net = ::boost::asio;
 
 /// The type of string view used by the library.
 using string_view = boost::string_view;
@@ -50,6 +58,7 @@ using boost::system::system_category;
 
 #else
 
+namespace net = std;
 using error_code      = std::error_code;
 using error_category  = std::error_category;
 using error_condition = std::error_condition;

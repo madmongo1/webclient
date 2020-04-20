@@ -15,4 +15,4 @@ add_executable(forty_two
     forty_two.cpp
 )
 set_property(TARGET forty_two PROPERTY FOLDER "example")
-target_link_libraries(forty_two PRIVATE boost_webclient)
+target_link_libraries(forty_two PRIVATE boost_webclient Threads::Threads)

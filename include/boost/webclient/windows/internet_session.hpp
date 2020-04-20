@@ -7,11 +7,10 @@
 // Official repository: https://github.com/madmongo1/webclient
 //
 
-#ifndef BOOST_WEBCLIENT_IMPL_WINDOWS_SESSION_HPP
-#define BOOST_WEBCLIENT_IMPL_WINDOWS_SESSION_HPP
+#ifndef BOOST_WEBCLIENT_IMPL_WINDOWS_INTERNET_SESSION_HPP
+#define BOOST_WEBCLIENT_IMPL_WINDOWS_INTERNET_SESSION_HPP
 
 #include <boost/webclient/config.hpp>
-#include <boost/webclient/impl/windows/platform.hpp>
 #include <boost/webclient/polyfill/exchange.hpp>
 #include <boost/webclient/session.hpp>
 #include <winhttp.h>
@@ -19,8 +18,8 @@
 namespace boost {
 namespace webclient {
 
-template <>
-struct basic_internet_session< windows_platform >
+template<class Executor = net::executor>
+struct basic_internet_session< Executor >
 {
     basic_internet_session()
     : handle_(::WinHttpOpen(L"Boost.WebClient",

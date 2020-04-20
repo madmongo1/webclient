@@ -29,6 +29,8 @@ endif()
 
 project(boost_WEBCLIENT VERSION ${BOOST_WEBCLIENT_VERSION} LANGUAGES CXX)
 
+find_package(Threads)
+
 file(GLOB_RECURSE BOOST_WEBCLIENT_HEADERS CONFIGURE_DEPENDS
     include/boost/*.hpp
     include/boost/*.ipp
@@ -122,6 +124,7 @@ else()
     endif()
 
 endif()
+
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows" OR ${CMAKE_SYSTEM_NAME} STREQUAL "MSYS")
     target_link_libraries(boost_webclient INTERFACE winhttp)

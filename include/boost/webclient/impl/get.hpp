@@ -19,7 +19,7 @@ namespace webclient {
 
 auto get(string_view url) -> std::string
 {
-    auto& sess =  default_internet_session();
+//    auto& sess =  default_internet_session();
 
     throw system_error(error_code(error::not_implemented));
 }
