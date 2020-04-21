@@ -13,6 +13,6 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "" FILES ${BOOST_WEBCLIENT_
 add_executable(tests ${BOOST_WEBCLIENT_TESTS_FILES})
 
 target_include_directories(tests PRIVATE .)
-target_link_libraries(tests PRIVATE boost_webclient)
+target_link_libraries(tests PRIVATE Boost::webclient)
 
 add_test(library-template-tests tests)

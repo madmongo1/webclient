@@ -48,29 +48,30 @@ if(${CMAKE_VERSION} VERSION_GREATER 3.7.2)
     source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src PREFIX "" FILES ${BOOST_WEBCLIENT_SOURCES})
 endif()
 
-add_library(boost_webclient ${BOOST_WEBCLIENT_HEADERS} ${BOOST_WEBCLIENT_SOURCES})
-add_library(Boost::webclient ALIAS boost_webclient)
-target_link_libraries(boost_webclient PUBLIC Threads::Threads)
+add_library(webclient ${BOOST_WEBCLIENT_HEADERS} ${BOOST_WEBCLIENT_SOURCES})
+set_target_properties(webclient PROPERTIES OUTPUT_NAME boost_webclient)
+add_library(Boost::webclient ALIAS webclient)
+target_link_libraries(webclient PUBLIC Threads::Threads)
 
-target_compile_features(boost_webclient PUBLIC cxx_constexpr)
+target_compile_features(webclient PUBLIC cxx_constexpr)
 
-target_include_directories(boost_webclient PUBLIC
+target_include_directories(webclient PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>)
 
-target_compile_definitions(boost_webclient PUBLIC BOOST_WEBCLIENT_NO_LIB=1)
+target_compile_definitions(webclient PUBLIC BOOST_WEBCLIENT_NO_LIB=1)
 
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(boost_webclient PUBLIC BOOST_WEBCLIENT_DYN_LINK=1)
+    target_compile_definitions(webclient PUBLIC BOOST_WEBCLIENT_DYN_LINK=1)
 else()
-    target_compile_definitions(boost_webclient PUBLIC BOOST_WEBCLIENT_STATIC_LINK=1)
+    target_compile_definitions(webclient PUBLIC BOOST_WEBCLIENT_STATIC_LINK=1)
 endif()
 
 option(BOOST_WEBCLIENT_STANDALONE "Build boost::webclient as a static standalone library" FALSE)
 
 if(BOOST_WEBCLIENT_STANDALONE)
-    target_compile_features(boost_webclient PUBLIC cxx_std_17)
-    target_compile_definitions(boost_webclient PUBLIC BOOST_WEBCLIENT_STANDALONE)
+    target_compile_features(webclient PUBLIC cxx_std_17)
+    target_compile_definitions(webclient PUBLIC BOOST_WEBCLIENT_STANDALONE)
     add_subdirectory(example)
 elseif(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     #
@@ -88,11 +89,11 @@ elseif(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
 
     if (BOOST_WEBCLIENT_FIND_BOOST)
         find_package(Boost REQUIRED COMPONENTS system)
-        target_link_libraries(boost_webclient PUBLIC Boost::system)
+        target_link_libraries(webclient PUBLIC Boost::system)
     else()
         get_filename_component(BOOST_ROOT ../.. ABSOLUTE)
-        target_include_directories(boost_webclient PUBLIC ${BOOST_ROOT})
-        target_link_directories(boost_webclient PUBLIC ${BOOST_ROOT}/stage/lib)
+        target_include_directories(webclient PUBLIC ${BOOST_ROOT})
+        target_link_directories(webclient PUBLIC ${BOOST_ROOT}/stage/lib)
     endif()
 
     add_subdirectory(example)
@@ -128,7 +129,7 @@ elseif(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
             INSTALL_DESTINATION "${config_install_dir}"
     )
 
-    install(TARGETS boost_webclient
+    install(TARGETS webclient
             EXPORT "${targets_export_name}"
             PRIVATE_HEADER DESTINATION "${include_install_dir}"
             ARCHIVE DESTINATION "${lib_install_dir}")
@@ -157,7 +158,7 @@ elseif(BOOST_SUPERPROJECT_VERSION)
     #
     # Building with Boost superproject cmake
     #
-    target_link_libraries(boost_webclient
+    target_link_libraries(webclient
         PUBLIC
             Boost::assert
             Boost::config
@@ -171,7 +172,7 @@ else()
     # Out-of-tree, non-standalone build
     #
     find_package(Boost COMPONENTS system)
-    target_link_libraries(boost_webclient
+    target_link_libraries(webclient
         PUBLIC
             Boost::system
     )
@@ -185,5 +186,5 @@ endif()
 
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows" OR ${CMAKE_SYSTEM_NAME} STREQUAL "MSYS")
-    target_link_libraries(boost_webclient INTERFACE winhttp)
+    target_link_libraries(webclient INTERFACE winhttp)
 endif()
