@@ -1,0 +1,6 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+includedir=${prefix}/include
+
+Name: @PROJECT_NAME@
+Description: Boost WebClient by madmongo38
+Version: @PROJECT_VERSION@
