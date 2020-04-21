@@ -63,8 +63,11 @@ auto make_unique(Args &&...) -> typename unique_maker< T >::invalid = delete;
 
 #else
 
+namespace boost { namespace webclient { namespace polyfill {
+
 using std::make_unique;
 
+}}}   // namespace boost::webclient::polyfill
 #endif
 
 #endif   // BOOST_WEBCLIENT_INTERNET_SESSION_HPP
