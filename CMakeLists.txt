@@ -54,7 +54,9 @@ target_link_libraries(boost_webclient PUBLIC Threads::Threads)
 
 target_compile_features(boost_webclient PUBLIC cxx_constexpr)
 
-target_include_directories(boost_webclient PUBLIC include)
+target_include_directories(boost_webclient PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>)
 
 target_compile_definitions(boost_webclient PUBLIC BOOST_WEBCLIENT_NO_LIB=1)
 
