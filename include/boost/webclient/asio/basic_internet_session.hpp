@@ -11,6 +11,7 @@
 #define BOOST_WEBCLIENT_ASIO_BASIC_INTERNET_SESSION_HPP
 
 #include <boost/asio/executor.hpp>
+#include <boost/asio/ssl/context.hpp>
 #include <boost/webclient/config.hpp>
 
 namespace boost {
@@ -31,6 +32,8 @@ struct basic_internet_session
         return exec_;
     }
     executor_type exec_;
+    asio::ssl::context ssl_context_;
+
 };
 
 }   // namespace webclient
