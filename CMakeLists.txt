@@ -22,12 +22,15 @@ else()
         HunterGate(
             URL "https://github.com/cpp-pm/hunter/archive/v0.23.251.tar.gz"
             SHA1 "5659b15dc0884d4b03dbd95710e6a1fa0fc3258d"
+            LOCAL
         )
     endif()
 endif()
 
 
 project(boost_WEBCLIENT VERSION ${BOOST_WEBCLIENT_VERSION} LANGUAGES CXX)
+
+option(BOOST_WEBCLIENT_STANDALONE "Build boost::webclient as a static standalone library" FALSE)
 
 find_package(Threads)
 
@@ -37,9 +40,10 @@ file(GLOB_RECURSE BOOST_WEBCLIENT_HEADERS CONFIGURE_DEPENDS
     include/boost/*.natvis
 )
 
-set(BOOST_WEBCLIENT_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/src.cpp
-)
+file(GLOB_RECURSE BOOST_WEBCLIENT_SPEC_SOURCES LIST_DIRECTORIES false CONFIGURE_DEPENDS "src/*.cpp")
+set(BOOST_WEBCLIENT_SOURCES ${BOOST_WEBCLIENT_SPEC_SOURCES})
+list(FILTER BOOST_WEBCLIENT_SOURCES EXCLUDE REGEX "^.*\\.spec\\.cpp$")
+list(FILTER BOOST_WEBCLIENT_SPEC_SOURCES INCLUDE REGEX "^.*\\.spec\\.cpp$")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -59,15 +63,11 @@ target_include_directories(webclient PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>)
 
-target_compile_definitions(webclient PUBLIC BOOST_WEBCLIENT_NO_LIB=1)
-
 if(BUILD_SHARED_LIBS)
     target_compile_definitions(webclient PUBLIC BOOST_WEBCLIENT_DYN_LINK=1)
 else()
     target_compile_definitions(webclient PUBLIC BOOST_WEBCLIENT_STATIC_LINK=1)
 endif()
-
-option(BOOST_WEBCLIENT_STANDALONE "Build boost::webclient as a static standalone library" FALSE)
 
 if(BOOST_WEBCLIENT_STANDALONE)
     target_compile_features(webclient PUBLIC cxx_std_17)
@@ -86,13 +86,15 @@ elseif(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
         hunter_add_package(Boost COMPONENTS system)
         if (CMAKE_SYSTEM_NAME MATCHES "[Ll]inux")
             hunter_add_package(OpenSSL)
+            hunter_add_package(uriparser)
         endif()
         set(BOOST_WEBCLIENT_FIND_BOOST ON)
     endif()
 
     if (CMAKE_SYSTEM_NAME MATCHES "[Ll]inux")
         find_package(OpenSSL)
-        target_link_libraries(webclient PUBLIC OpenSSL::SSL OpenSSL::Crypto)
+        find_package(uriparser)
+        target_link_libraries(webclient PUBLIC OpenSSL::SSL OpenSSL::Crypto uriparser::uriparser)
     endif()
     if (BOOST_WEBCLIENT_FIND_BOOST)
         find_package(Boost REQUIRED COMPONENTS system)

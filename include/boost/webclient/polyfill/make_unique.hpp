@@ -6,6 +6,14 @@
 //
 // Official repository: https://github.com/madmongo1/webclient
 //
+// This project was made possible with the generous support of:
+// The C++ Alliance (https://cppalliance.org/)
+// Jetbrains (https://www.jetbrains.com/)
+//
+// Talk to us on Slack (https://cppalliance.org/slack/)
+//
+// Many thanks to Vinnie Falco for continuous mentoring and support
+//
 
 #ifndef BOOST_WEBCLIENT_POLYFILL_MAKE_UNIQUE_HPP
 #define BOOST_WEBCLIENT_POLYFILL_MAKE_UNIQUE_HPP
