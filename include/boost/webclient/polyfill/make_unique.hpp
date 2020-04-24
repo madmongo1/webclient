@@ -21,71 +21,23 @@
 #include <boost/webclient/config.hpp>
 #include <memory>
 
-#if __cplusplus <= 201103L
-
-namespace boost { namespace webclient {
-namespace polyfill {
-
-template < class T >
-struct unique_maker
-{
-    using single_object = std::unique_ptr< T >;
-};
-
-template < class T >
-struct unique_maker< T[] >
-{
-    using array = std::unique_ptr< T[] >;
-};
-
-template < class T, std::size_t Extent >
-struct unique_maker< T[Extent] >
-{
-    struct invalid
-    {
-    };
-};
-
-/// single objects
-template < class T, class... Args >
-auto make_unique(Args &&... args) -> typename unique_maker< T >::single_object
-{
-    return std::unique_ptr< T >(new T(std::forward< Args >(args)...));
-}
-
-/// arrays of unknown bound
-template < class T >
-auto make_unique(std::size_t n) -> typename unique_maker< T >::array
-{
-    struct array_deleter
-    {
-        void operator()(T *p) const noexcept { delete[] p; }
-    };
-    return std::unique_ptr< T, array_deleter >(new typename std::remove_extent< T >::type(n));
-}
-
-/// Disable arrays of known bound
-template < class T, class... Args >
-auto make_unique(Args &&...) -> typename unique_maker< T >::invalid = delete;
-
-}   // namespace polyfill
-
-using polyfill::make_unique;
-
-}}   // namespace boost::webclient
-
+#ifdef BOOST_WEBCLIENT_STANDALONE
 #else
+#include <boost/make_unique.hpp>
+#endif
 
 namespace boost { namespace webclient {
-namespace polyfill {
+
+#ifdef BOOST_WEBCLIENT_STANDALONE
 
 using std::make_unique;
 
-}
+#else
 
-using polyfill::make_unique;
+using boost::make_unique;
 
-}}   // namespace boost::webclient
 #endif
 
-#endif   // BOOST_WEBCLIENT_INTERNET_SESSION_HPP
+}}   // namespace boost::webclient
+
+#endif   // BOOST_WEBCLIENT_POLYFILL_MAKE_UNIQUE_HPP

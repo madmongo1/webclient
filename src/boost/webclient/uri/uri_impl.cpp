@@ -15,6 +15,7 @@
 // Many thanks to Vinnie Falco for continuous mentoring and support
 //
 
+#include <boost/algorithm/string/predicate.hpp>
 #include <boost/webclient/polyfill/exchange.hpp>
 #include <boost/webclient/uri/uri_impl.hpp>
 #include <iomanip>
@@ -100,7 +101,7 @@ auto uri_impl::hostname() const -> std::string
         return to_string(uri_.hostText);
 }
 
-auto deduce_http_service(uri_impl const& uri)  -> std::string
+auto deduce_http_service(uri_impl const &uri) -> std::string
 {
     std::string result;
     auto        p = uri.port();
@@ -135,6 +136,29 @@ auto uri_impl::parse(std::string const &source, error_code &ec) -> error_code &
     else
         ec.clear();
     return ec;
+}
+
+auto uri_impl::target_as_string() const -> std::string
+{
+    std::string result;
+
+    return result;
+}
+
+auto secure_transport_indicated(uri_impl const &uri, std::uint16_t port) -> bool
+{
+    auto scheme = uri.scheme();
+    if (!scheme.empty())
+    {
+        if (boost::iequals(scheme, "https") || boost::iequals(scheme, "wss"))
+            return true;
+    }
+    else
+    {
+        if (port == 443)
+            return true;
+    }
+    return false;
 }
 
 }}}   // namespace boost::webclient::uri

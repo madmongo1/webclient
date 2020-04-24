@@ -60,11 +60,15 @@ struct uri_impl
 
     auto parse(std::string const &source, error_code &ec) -> error_code &;
 
+    auto target_as_string() const -> std::string;
+
     ::UriUriA uri_;
     bool      active_;
 };
 
 auto deduce_http_service(uri_impl const &uri) -> std::string;
+
+auto secure_transport_indicated(uri_impl const& uri, std::uint16_t port)->bool;
 
 }}}   // namespace boost::webclient::uri
 

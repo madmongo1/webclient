@@ -87,7 +87,7 @@ struct basic_internet_session
   private:
     static auto construct(executor_type &&exec) -> impl_type
     {
-        return polyfill::make_unique< impl_class >(std::move(exec));
+        return make_unique< impl_class >(std::move(exec));
     }
 
     auto destroy() -> void { impl_.reset(); }

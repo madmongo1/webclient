@@ -32,11 +32,17 @@ struct internet_session_iface
     {
     }
 
+    // maximum time the resolve phase of a connection may take
     auto resolve_timeout() const -> duration { return resolve_timeout_; }
     auto resolve_timeout(duration d) -> void { resolve_timeout_ = d; };
 
+    // maximum time the connection of a single resolved endpoint may take
+    auto connect_timeout() const -> duration { return connect_timeout_; }
+    auto connect_timeout(duration d) -> void { connect_timeout_ = d; };
+
   private:
     duration resolve_timeout_;
+    duration connect_timeout_;
 };
 
 }}   // namespace boost::webclient
