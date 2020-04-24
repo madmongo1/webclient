@@ -17,6 +17,7 @@
 
 #include "boost/webclient/get.hpp"
 
+#include <boost/beast/_experimental/test/handler.hpp>
 #include <catch2/catch.hpp>
 
 namespace webclient = boost::webclient;
@@ -34,5 +35,7 @@ TEST_CASE("boost::webclient::get")
                 CHECK(response.header().status_code() == 200);
                 CHECK(response.body() == "");
             });
+
+        boost::beast::test::run(ioc);
     }
 }

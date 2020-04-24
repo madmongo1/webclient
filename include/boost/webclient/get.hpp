@@ -22,7 +22,19 @@
 #include <boost/webclient/polyfill/make_unique.hpp>
 #include <string>
 
+#ifdef BOOST_PLAT_WINDOWS_DESKTOP
+#include <boost/webclient/windows/get_op.hpp>
+#else
+#include <boost/webclient/asio/get_op.hpp>
+#endif
+
 namespace boost { namespace webclient {
+
+#ifdef BOOST_PLAT_WINDOWS_DESKTOP
+using get_op = boost::webclient::windows::get_op;
+#else
+using get_op = boost::webclient::asio::get_op;
+#endif
 
 /// Synchronously fetch a document and return the body as a string.
 ///
@@ -31,29 +43,20 @@ namespace boost { namespace webclient {
 /// @throw system_error on failure
 inline auto get(string_view url) -> std::string;
 
-struct async_get_op : asio::coroutine
-{
-    template < class Self >
-    void operator()(Self &self, error_code const &ec = {}, std::size_t bytes_transferred = 0)
-    {
-#include <boost/asio/yield.hpp>
-        reenter(this) for (;;)
-        {
-            yield net::post(boost::beast::bind_front_handler(std::move(self), error::not_implemented));
-
-            return self.complete(ec, std::move(*response));
-        }
-#include <boost/asio/unyield.hpp>
-    }
-
-    unique_http_response response = polyfill::make_unique< http_response >();
-};
-
 template < class Executor, class CompletionToken >
 BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(CompletionToken, void(error_code, http_response))
 async_get(basic_internet_session< Executor > &session, string_view url, CompletionToken &&token)
 {
-    return net::async_compose< CompletionToken, void(error_code, http_response) >(async_get_op {}, token, session);
+    return net::async_compose< CompletionToken, void(error_code, http_response) >(
+        get_op(session, url), token, session);
+}
+
+template < class Executor, class CompletionToken >
+BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(CompletionToken, void(error_code, http_response))
+async_get(string_view url, CompletionToken &&token)
+{
+    auto& session = get_default_internet_session();
+    return async_get(session, url, std::forward<CompletionToken>(token));
 }
 
 }}   // namespace boost::webclient

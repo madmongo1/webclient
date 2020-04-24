@@ -14,17 +14,25 @@
 #include <boost/webclient/config.hpp>
 
 #ifdef BOOST_PLAT_WINDOWS_DESKTOP
-#    include <boost/webclient/windows/basic_internet_session.hpp>
+#include <boost/webclient/windows/basic_internet_session.hpp>
 #else
-#    include <boost/webclient/asio/basic_internet_session.hpp>
+#include <boost/webclient/asio/basic_internet_session.hpp>
 #endif
 
-namespace boost {
-namespace webclient {
+namespace boost { namespace webclient {
+
+#ifdef BOOST_PLAT_WINDOWS_DESKTOP
+template < class Executor >
+using basic_internet_session = windows::basic_internet_session< Executor >;
+#else
+template < class Executor >
+using basic_internet_session = asio::basic_internet_session< Executor >;
+#endif
 
 using internet_session = basic_internet_session< net::executor >;
 
-}
-}   // namespace boost
+auto get_default_internet_session() -> internet_session &;
+
+}}   // namespace boost::webclient
 
 #endif   // BOOST_WEBCLIENT_INTERNET_SESSION_HPP

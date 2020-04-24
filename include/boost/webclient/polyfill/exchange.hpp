@@ -18,21 +18,25 @@
 #ifndef BOOST_BOOST_WEBCLIENT_POLYFILL_EXCHANGE_HPP
 #define BOOST_BOOST_WEBCLIENT_POLYFILL_EXCHANGE_HPP
 
-#include <boost/webclient/config.hpp>
-
-#if __cplusplus >= 201402L
+#ifdef BOOST_WEBCLIENT_STANDALONE
 #include <utility>
 #else
 #include <boost/core/exchange.hpp>
 #endif
 
-namespace boost { namespace webclient { namespace polyfill {
+namespace boost { namespace webclient {
 
-#if __cplusplus >= 201402L
+namespace polyfill {
+
+#ifdef BOOST_WEBCLIENT_STANDALONE
 using ::std::exchange;
 #else
 using ::boost::exchange;
 #endif
 
-}}}   // namespace boost::webclient::polyfill
+}   // namespace polyfill
+
+using polyfill::exchange;
+
+}}   // namespace boost::webclient
 #endif

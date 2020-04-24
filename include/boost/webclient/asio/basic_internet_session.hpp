@@ -16,28 +16,29 @@
 #include <boost/webclient/polyfill/exchange.hpp>
 #include <boost/webclient/polyfill/make_unique.hpp>
 
-namespace boost { namespace webclient {
+namespace boost { namespace webclient { namespace asio {
 
 template < class Executor >
 struct basic_internet_session_impl
 {
-    using executor_type = Executor;
+    using executor_type    = Executor;
+    using ssl_context_type = boost::asio::ssl::context;
 
     basic_internet_session_impl(executor_type &&exec)
     : exec_(std::move(exec))
-    , ssl_context_(asio::ssl::context::tlsv13_client)
+    , ssl_context_(ssl_context_type::tlsv13_client)
     {
-        ssl_context_.set_options(asio::ssl::context::default_workarounds | asio::ssl::context::no_tlsv1 |
-                                 asio::ssl::context::single_dh_use);
+        ssl_context_.set_options(ssl_context_type::default_workarounds | ssl_context_type::no_tlsv1 |
+                                 ssl_context_type::single_dh_use);
         ssl_context_.set_default_verify_paths();
     }
 
     auto get_executor() const -> executor_type { return exec_; }
 
-    auto ssl_context() -> asio::ssl::context & { return ssl_context_; }
+    auto ssl_context() -> ssl_context_type & { return ssl_context_; }
 
-    executor_type      exec_;
-    asio::ssl::context ssl_context_;
+    executor_type    exec_;
+    ssl_context_type ssl_context_;
 };
 
 template < class Executor = net::executor >
@@ -46,7 +47,8 @@ struct basic_internet_session
     using impl_class = basic_internet_session_impl< Executor >;
     using impl_type  = std::unique_ptr< impl_class >;
 
-    using executor_type = typename impl_class::executor_type;
+    using executor_type    = typename impl_class::executor_type;
+    using ssl_context_type = typename impl_class::ssl_context_type;
 
     basic_internet_session(executor_type exec)
     : impl_(construct(std::move(exec)))
@@ -68,7 +70,8 @@ struct basic_internet_session
 
     ~basic_internet_session() { destroy(); }
 
-    auto get_executor() -> executor_type { return impl_->get_executor(); }
+    auto get_executor() const -> executor_type { return impl_->get_executor(); }
+    auto ssl_context() -> ssl_context_type & { return impl_->ssl_context(); }
 
   private:
     static auto construct(executor_type &&exec) -> impl_type
@@ -81,6 +84,6 @@ struct basic_internet_session
     impl_type impl_;
 };
 
-}}   // namespace boost::webclient
+}}}   // namespace boost::webclient::asio
 
 #endif
