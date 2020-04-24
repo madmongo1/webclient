@@ -6,6 +6,14 @@
 //
 // Official repository: https://github.com/madmongo1/webclient
 //
+// This project was made possible with the generous support of:
+// The C++ Alliance (https://cppalliance.org/)
+// Jetbrains (https://www.jetbrains.com/)
+//
+// Talk to us on Slack (https://cppalliance.org/slack/)
+//
+// Many thanks to Vinnie Falco for continuous mentoring and support
+//
 
 #ifndef BOOST_WEBCLIENT_ASIO_BASIC_INTERNET_SESSION_HPP
 #define BOOST_WEBCLIENT_ASIO_BASIC_INTERNET_SESSION_HPP
@@ -13,13 +21,14 @@
 #include <boost/asio/executor.hpp>
 #include <boost/asio/ssl/context.hpp>
 #include <boost/webclient/config.hpp>
+#include <boost/webclient/internet_session_iface.hpp>
 #include <boost/webclient/polyfill/exchange.hpp>
 #include <boost/webclient/polyfill/make_unique.hpp>
 
 namespace boost { namespace webclient { namespace asio {
 
 template < class Executor >
-struct basic_internet_session_impl
+struct basic_internet_session_impl : internet_session_iface
 {
     using executor_type    = Executor;
     using ssl_context_type = boost::asio::ssl::context;
@@ -72,6 +81,8 @@ struct basic_internet_session
 
     auto get_executor() const -> executor_type { return impl_->get_executor(); }
     auto ssl_context() -> ssl_context_type & { return impl_->ssl_context(); }
+
+    auto iface() const -> internet_session_iface & { return *impl_; }
 
   private:
     static auto construct(executor_type &&exec) -> impl_type

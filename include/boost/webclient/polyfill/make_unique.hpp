@@ -23,7 +23,8 @@
 
 #if __cplusplus <= 201103L
 
-namespace boost { namespace webclient { namespace polyfill {
+namespace boost { namespace webclient {
+namespace polyfill {
 
 template < class T >
 struct unique_maker
@@ -67,15 +68,24 @@ auto make_unique(std::size_t n) -> typename unique_maker< T >::array
 template < class T, class... Args >
 auto make_unique(Args &&...) -> typename unique_maker< T >::invalid = delete;
 
-}}}   // namespace boost::webclient::polyfill
+}   // namespace polyfill
+
+using polyfill::make_unique;
+
+}}   // namespace boost::webclient
 
 #else
 
-namespace boost { namespace webclient { namespace polyfill {
+namespace boost { namespace webclient {
+namespace polyfill {
 
 using std::make_unique;
 
-}}}   // namespace boost::webclient::polyfill
+}
+
+using polyfill::make_unique;
+
+}}   // namespace boost::webclient
 #endif
 
 #endif   // BOOST_WEBCLIENT_INTERNET_SESSION_HPP

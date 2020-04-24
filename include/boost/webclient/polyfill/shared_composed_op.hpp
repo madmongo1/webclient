@@ -26,7 +26,7 @@ namespace boost { namespace webclient { namespace polyfill {
 template < class Impl, class Work, class Handler, class Signature >
 struct shared_composed_op
 {
-    using composed_op_type = asio::detail::composed_op< Impl, Work, Handler, Signature >;
+    using composed_op_type = boost::asio::detail::composed_op< Impl, Work, Handler, Signature >;
 
     using allocator_type = typename net::associated_allocator< composed_op_type >::type;
     using executor_type  = typename net::associated_executor< composed_op_type >::type;
@@ -66,7 +66,7 @@ struct shared_composed_op
 };
 
 template < class Impl, class Work, class Handler, class Signature >
-auto share(asio::detail::composed_op< Impl, Work, Handler, Signature > &composed_op)
+auto share(boost::asio::detail::composed_op< Impl, Work, Handler, Signature > &composed_op)
     -> shared_composed_op< Impl, Work, Handler, Signature >
 {
     auto op = shared_composed_op< Impl, Work, Handler, Signature >(std::move(composed_op));
