@@ -11,6 +11,7 @@
 #include "test_suite.hpp"
 
 #include <boost/webclient/get.hpp>
+#include <iostream>
 
 namespace boost {
 namespace webclient {
@@ -20,7 +21,8 @@ class get_test
   public:
     void run()
     {
-        std::string s = get( "http://www.boost.org" );
+        auto resp = get( "http://www.boost.org" );
+        std::cout << resp.log();
     }
 };
 
