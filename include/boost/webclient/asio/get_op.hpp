@@ -114,13 +114,13 @@ struct get_op
     void on_timeout()
     {
         this->cancel_resolver();
-        log("timeout");
+        log("Timeout");
     }
 
     void on_resolved(error_code const &ec)
     {
-        log("resolved: ", ec);
         this->cancel_timeout();
+        log("Resolve complete: ", ec);
     }
 
     template < class... Args >
@@ -142,12 +142,17 @@ struct get_op
         reenter(this) for (;;)
         {
             state.uri.parse(state.input_uri, ec);
-            log("parse: ", ec);
+            log("Parse URI: ", ec);
             if (this->set_error(ec))
             {
                 yield net::post(std::move(self));
                 goto finish;
             }
+
+            state.uri.normalise_target(ec);
+            log("Normalise target: ", ec);
+            if (this->set_error(ec))
+                goto finish;
 
             yield share(self);
 
@@ -160,12 +165,8 @@ struct get_op
 
             while (this->resolving() || this->timeout_outstanding())
                 yield;
-
             if (this->error)
-            {
-                state.response.log("resolve failure: ", this->error);
                 goto finish;
-            }
 
             // connect the socket
 
@@ -174,7 +175,7 @@ struct get_op
             {
                 state.tcp_stream().expires_after(state.session_.connect_timeout());
                 yield state.tcp_stream().async_connect(state.current_resolve_result->endpoint(), share(self));
-                state.response.log("connect to: ", state.current_resolve_result->endpoint(), " result: ", ec);
+                log("Connect to: ", state.current_resolve_result->endpoint(), " result: ", ec);
                 // if the connect is successful, we can exit the loop early.
                 if (!ec)
                     goto connected;
@@ -200,6 +201,7 @@ struct get_op
             if (state.ssl_involved)
             {
                 yield state.ssl_stream.async_handshake(ssl_stream_type::client, share(self));
+                log("SSL Handshake: ", ec);
                 if (this->set_error(ec))
                     goto finish;
             }
@@ -210,7 +212,7 @@ struct get_op
             state.request.version(11);
             state.request.keep_alive(true);
             state.request.target(state.uri.target_as_string(ec));
-            state.response.log("encoding target: ", ec, " yields target [", state.request.target(), ']');
+            log("Encoding target: ", ec, " yields target [", state.request.target(), ']');
             if (this->set_error(ec))
                 goto finish;
             state.request.set("host", state.uri.hostname());
@@ -220,7 +222,7 @@ struct get_op
                 yield http::async_write(state.ssl_stream, state.request, share(self));
             else
                 yield http::async_write(state.tcp_stream(), state.request, share(self));
-            log("Write complete: ", ec);
+            log("Write: ", ec);
             if (ec)
                 return self.complete(ec, std::move(state.response));
 
@@ -237,7 +239,7 @@ struct get_op
                 yield http::async_read(state.ssl_stream, state.read_buffer, state.response_view, share(self));
             else
                 yield http::async_read(state.tcp_stream(), state.read_buffer, state.response_view, share(self));
-            log("Response complete : ",
+            log("Read : ",
                 ec,
                 "[response ",
                 state.response_view.result_int(),
@@ -266,7 +268,7 @@ struct get_op
             //
 
         finish:
-            log("Operation complete: ", this->error);
+            log("Get complete: ", this->error);
             return self.complete(this->error, std::move(state.response));
         }
 #include <boost/asio/unyield.hpp>

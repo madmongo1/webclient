@@ -43,6 +43,11 @@ inline auto impl_body(asio::http_response_impl_class const &self) -> std::string
     return self.body();
 }
 
+inline auto  impl_status_message(asio::http_response_impl_class const &self) -> string_view
+{
+    return self.reason();
+}
+
 using default_http_response_guts_type = asio::http_response_impl_class;
 }}   // namespace boost::webclient
 

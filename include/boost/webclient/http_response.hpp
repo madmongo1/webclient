@@ -36,6 +36,7 @@ struct basic_http_response_impl
     auto log() const -> std::string const& { return log_; }
 
     auto status_int() const -> unsigned int;
+    auto status_message() const -> string_view;
 
     auto body() const -> std::string const&;
 
@@ -57,6 +58,12 @@ template<class Guts>
 auto basic_http_response_impl<Guts>::status_int() const -> unsigned int
 {
     return impl_status_int(guts_);
+}
+
+template<class Guts>
+auto basic_http_response_impl<Guts>::status_message() const -> string_view
+{
+    return impl_status_message(guts_);
 }
 
 template<class Guts>
@@ -94,6 +101,8 @@ struct const_http_response_interface
     using native_type = http_response_impl::native_type;
 
     auto status_int() const -> int { return static_cast< Derived const * >(this)->impl().status_int(); }
+
+    auto status_message() const -> string_view { return static_cast< Derived const * >(this)->impl().status_message(); }
 
     auto body() -> std::string const & { return static_cast< Derived const * >(this)->impl().body(); }
 

@@ -64,6 +64,8 @@ struct uri_impl
 
     auto target_as_string(error_code& ec) const -> std::string;
 
+    auto normalise_target(error_code& ec) -> void;
+
     ::UriUriA uri_;
     bool      active_;
 };

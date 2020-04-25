@@ -18,8 +18,8 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/webclient/polyfill/exchange.hpp>
 #include <boost/webclient/uri/error.hpp>
-#include <boost/webclient/uri/uri_impl.hpp>
 #include <boost/webclient/uri/query_list.hpp>
+#include <boost/webclient/uri/uri_impl.hpp>
 #include <iomanip>
 #include <iterator>
 #include <sstream>
@@ -134,7 +134,20 @@ auto uri_impl::parse(std::string const &source, error_code &ec) -> error_code &
     if (active_)
         ::uriFreeUriMembersA(&uri_);
     const char *error_pos = nullptr;
-    return check_result(::uriParseSingleUriA(&uri_, source.c_str(), &error_pos), ec);
+    check_result(::uriParseSingleUriA(&uri_, source.c_str(), &error_pos), ec);
+    if (!ec)
+        active_ = true;
+}
+
+auto uri_impl::normalise_target(error_code &ec) -> void
+{
+    assert(active_);
+    unsigned int required = 0;
+    check_result(::uriNormalizeSyntaxMaskRequiredExA(&uri_, &required), ec);
+    if (!ec && (required & URI_NORMALIZE_PATH))
+    {
+        check_result(::uriNormalizeSyntaxExA(&uri_, URI_NORMALIZE_PATH), ec);
+    }
 }
 
 auto uri_impl::target_as_string(error_code &ec) const -> std::string
@@ -146,6 +159,9 @@ auto uri_impl::target_as_string(error_code &ec) const -> std::string
         result += '/';
         result.append(first->text.first, first->text.afterLast);
     }
+
+    if (result.empty())
+        result = '/';
 
     auto ql = query_list();
     ql.parse(query(), ec);

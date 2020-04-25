@@ -24,9 +24,9 @@ int main()
     auto session = webclient::internet_session(exec);
 
     auto ec = webclient::error_code();
-    webclient::http_response response;
+    webclient::unique_http_response response;
 
-    async_get(session, "http://example.com", [&](webclient::error_code ec_, webclient::http_response&& response_)
+    webclient::async_get(session, "http://example.com", [&](webclient::error_code ec_, webclient::unique_http_response&& response_)
     {
         ec = ec_;
         response = std::move(response_);
@@ -36,13 +36,16 @@ int main()
 
     if (ec.failed())
         std::cout << ec << std::endl;
-    else if (response.header().status_code() != 200)
+    else if (response.status_int() != 200)
     {
-        std::cout << response.header().status_message();
+        std::cout << response.status_message();
     }
     else
     {
         std::cout << response.body();
     }
+
+    std::cout << "Log:\n";
+    std::cout << response.log();
 
 }
