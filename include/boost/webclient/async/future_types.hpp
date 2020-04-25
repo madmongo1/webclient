@@ -15,26 +15,17 @@
 // Many thanks to Vinnie Falco for continuous mentoring and support
 //
 
-#ifndef BOOST_WEBCLIENT_POLYFILL_OPTIONAL_HPP
-#define BOOST_WEBCLIENT_POLYFILL_OPTIONAL_HPP
+#ifndef BOOST_WEBCLIENT_ASYNC__FUTURE_TYPES__HPP
+#define BOOST_WEBCLIENT_ASYNC__FUTURE_TYPES__HPP
 
-#ifdef BOOST_WEBCLIENT_STANDALONE
-#include <optional>
-#else
-#include <boost/optional/optional.hpp>
-#endif
+#include <boost/webclient/config.hpp>
+#include <boost/webclient/polyfill/outcome.hpp>
 
-namespace boost { namespace webclient { namespace polyfill {
+namespace boost { namespace webclient { namespace async {
 
-#ifdef BOOST_WEBCLIENT_STANDALONE
-using std::nullopt_t;
-using std::optional;
+template < class T >
+using future_result_type = outcome::outcome< T >;
 
-#else
-using boost::optional;
-using nullopt_t = boost::none_t;
-#endif
+}}}   // namespace boost::webclient::async
 
-}}}   // namespace boost::webclient::polyfill
-
-#endif   // BOOST_WEBCLIENT_POLYFILL_OPTIONAL_HPP
+#endif   // BOOST_WEBCLIENT_ASYNC__FUTURE_TYPES__HPP

@@ -15,26 +15,45 @@
 // Many thanks to Vinnie Falco for continuous mentoring and support
 //
 
-#ifndef BOOST_WEBCLIENT_POLYFILL_OPTIONAL_HPP
-#define BOOST_WEBCLIENT_POLYFILL_OPTIONAL_HPP
+#ifndef BOOST_WEBCLIENT_POLYFILL_VARIANT_HPP
+#define BOOST_WEBCLIENT_POLYFILL_VARIANT_HPP
+
+#include <boost/webclient/config.hpp>
 
 #ifdef BOOST_WEBCLIENT_STANDALONE
-#include <optional>
+#include <variant>
 #else
-#include <boost/optional/optional.hpp>
+#include <boost/variant/get.hpp>
+#include <boost/variant/variant.hpp>
 #endif
 
 namespace boost { namespace webclient { namespace polyfill {
 
 #ifdef BOOST_WEBCLIENT_STANDALONE
-using std::nullopt_t;
-using std::optional;
-
+using std::get;
+using std::holds_alternative;
+using std::variant;
+using std::visit;
 #else
-using boost::optional;
-using nullopt_t = boost::none_t;
+using boost::variant;
+
+using boost::get;
+
+template < class T, class... Ts >
+bool holds_alternative(variant< Ts... > const &v)
+{
+    return v.type() == typeid(T);
+}
+
+template < class Visitor, class... Vs >
+auto visit(Visitor &&visitor, Vs &&... vs)
+    -> decltype(boost::apply_visitor(std::forward< Visitor >(visitor), std::forward< Vs >(vs)...))
+{
+    return boost::apply_visitor(std::forward< Visitor >(visitor), std::forward< Vs >(vs)...);
+}
+
 #endif
 
 }}}   // namespace boost::webclient::polyfill
 
-#endif   // BOOST_WEBCLIENT_POLYFILL_OPTIONAL_HPP
+#endif

@@ -15,26 +15,15 @@
 // Many thanks to Vinnie Falco for continuous mentoring and support
 //
 
-#ifndef BOOST_WEBCLIENT_POLYFILL_OPTIONAL_HPP
-#define BOOST_WEBCLIENT_POLYFILL_OPTIONAL_HPP
+#include <boost/asio/compose.hpp>
 
-#ifdef BOOST_WEBCLIENT_STANDALONE
-#include <optional>
-#else
-#include <boost/optional/optional.hpp>
-#endif
+namespace boost { namespace webclient { namespace async {
+template < class T >
+template < class CompletionHandler >
+auto future< T >::async_wait(CompletionHandler &&token)
+-> BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(CompletionHandler, result_type)
+{
+    return net::async_compose< CompletionHandler, void(result_type) >(detail::future_wait_op< T > { impl_ }, token);
+}
 
-namespace boost { namespace webclient { namespace polyfill {
-
-#ifdef BOOST_WEBCLIENT_STANDALONE
-using std::nullopt_t;
-using std::optional;
-
-#else
-using boost::optional;
-using nullopt_t = boost::none_t;
-#endif
-
-}}}   // namespace boost::webclient::polyfill
-
-#endif   // BOOST_WEBCLIENT_POLYFILL_OPTIONAL_HPP
+}}}   // namespace boost::webclient::async

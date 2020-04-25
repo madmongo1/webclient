@@ -15,26 +15,21 @@
 // Many thanks to Vinnie Falco for continuous mentoring and support
 //
 
-#ifndef BOOST_WEBCLIENT_POLYFILL_OPTIONAL_HPP
-#define BOOST_WEBCLIENT_POLYFILL_OPTIONAL_HPP
+#ifndef BOOST_WEBCLIENT_ASIO__CONNECTION__HPP
+#define BOOST_WEBCLIENT_ASIO__CONNECTION__HPP
 
-#ifdef BOOST_WEBCLIENT_STANDALONE
-#include <optional>
-#else
-#include <boost/optional/optional.hpp>
+#include <boost/asio/executor.hpp>
+#include <boost/webclient/asio/connection.hpp>
+#include <boost/webclient/config.hpp>
+#include <unordered_map>
+
+namespace boost { namespace webclient { namespace asio {
+
+struct connection
+{
+
+};
+
+}}}   // namespace boost::webclient::asio
+
 #endif
-
-namespace boost { namespace webclient { namespace polyfill {
-
-#ifdef BOOST_WEBCLIENT_STANDALONE
-using std::nullopt_t;
-using std::optional;
-
-#else
-using boost::optional;
-using nullopt_t = boost::none_t;
-#endif
-
-}}}   // namespace boost::webclient::polyfill
-
-#endif   // BOOST_WEBCLIENT_POLYFILL_OPTIONAL_HPP
