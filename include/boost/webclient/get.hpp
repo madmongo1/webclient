@@ -41,7 +41,7 @@ using get_op = boost::webclient::asio::get_op;
 /// @param url is the url of the required document
 /// @return a string containing the body returned by the fetch
 /// @throw system_error on failure
-inline auto get(string_view url) -> std::string;
+inline auto get(string_view url) -> unique_http_response;
 
 template < class Executor, class CompletionToken >
 BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(CompletionToken, void(error_code, unique_http_response))

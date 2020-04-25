@@ -16,7 +16,7 @@
 namespace net = boost::asio;
 namespace webclient = boost::webclient;
 
-int main()
+void forty_two_async()
 {
     net::io_context ioc;
     auto exec = ioc.get_executor();
@@ -47,5 +47,24 @@ int main()
 
     std::cout << "Log:\n";
     std::cout << response.log();
+}
 
+void forty_two_sync()
+{
+    try
+    {
+        std::cout << webclient::get("http://example.com").body() << std::endl;
+    }
+    catch(webclient::system_error& se)
+    {
+        std::cout << "error:\n";
+        std::cout << se.what();
+    }
+
+}
+
+int main()
+{
+    forty_two_sync();
+    forty_two_async();
 }

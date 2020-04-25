@@ -12,16 +12,29 @@
 
 #include <boost/webclient/config.hpp>
 #include <boost/webclient/error.hpp>
-
+#include <boost/webclient/internet_session.hpp>
+#include <boost/webclient/get.hpp>
+#include <future>
 
 namespace boost {
 namespace webclient {
 
-auto get(string_view url) -> std::string
+auto get(string_view url) -> unique_http_response
 {
-//    auto& sess =  default_internet_session();
+    auto& session =  get_default_internet_session();
 
-    throw system_error(error_code(error::not_implemented));
+
+    auto p = std::promise<unique_http_response>();
+    auto f = p.get_future();
+
+    async_get(session, url, [&p](error_code ec, unique_http_response response){
+        if (ec)
+            p.set_exception(std::make_exception_ptr(system_error(ec, response.log())));
+        else
+            p.set_value(std::move(response));
+    });
+
+    return f.get();
 }
 
 }   // namespace webclient
