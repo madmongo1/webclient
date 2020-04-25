@@ -105,9 +105,10 @@ elseif(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
         target_link_directories(webclient PUBLIC ${BOOST_ROOT}/stage/lib)
     endif()
 
-    add_subdirectory(example)
-    add_subdirectory(test)
-
+    if(BUILD_TESTING)
+        add_subdirectory(example)
+        add_subdirectory(test)
+    endif()
     #
     # installation
     #
