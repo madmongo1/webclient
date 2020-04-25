@@ -107,7 +107,7 @@ struct get_op
     : has_error_code()
     , has_resolver(session.get_executor())
     , has_timeout(session.get_executor())
-    , state_(make_unique< get_op_state >(session, uri))
+    , state_(polyfill::make_unique< get_op_state >(session, uri))
     {
     }
 

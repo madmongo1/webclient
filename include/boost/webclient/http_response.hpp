@@ -77,12 +77,12 @@ template<class Item1, class...Items>
 auto basic_http_response_impl<Guts>::log(Item1 const& item1, Items const&...items) -> std::string&
 {
     using expand = int[];
-    expand {
+    void(expand {
         0,
         ((print_to(log_, item1)), 0),
         ((print_to(log_, items)), 0)...,
         ((print_to(log_, '\n')), 0)
-    };
+    });
     return log_;
 }
 

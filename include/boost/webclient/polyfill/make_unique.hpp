@@ -26,7 +26,7 @@
 #include <boost/make_unique.hpp>
 #endif
 
-namespace boost { namespace webclient {
+namespace boost { namespace webclient { namespace polyfill {
 
 #ifdef BOOST_WEBCLIENT_STANDALONE
 
@@ -38,6 +38,6 @@ using boost::make_unique;
 
 #endif
 
-}}   // namespace boost::webclient
+}}}   // namespace boost::webclient
 
 #endif   // BOOST_WEBCLIENT_POLYFILL_MAKE_UNIQUE_HPP
