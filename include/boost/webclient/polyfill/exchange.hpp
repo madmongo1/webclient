@@ -24,9 +24,7 @@
 #include <boost/core/exchange.hpp>
 #endif
 
-namespace boost { namespace webclient {
-
-namespace polyfill {
+namespace boost { namespace webclient { namespace polyfill {
 
 #ifdef BOOST_WEBCLIENT_STANDALONE
 using ::std::exchange;
@@ -34,9 +32,5 @@ using ::std::exchange;
 using ::boost::exchange;
 #endif
 
-}   // namespace polyfill
-
-using polyfill::exchange;
-
-}}   // namespace boost::webclient
+}}}   // namespace boost::webclient::polyfill
 #endif

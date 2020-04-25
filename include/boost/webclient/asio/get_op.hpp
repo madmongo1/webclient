@@ -70,7 +70,7 @@ struct get_op_state
     auto        elapsed() -> std::chrono::duration< double >
     {
         auto const n = now();
-        return std::chrono::duration_cast< std::chrono::duration< double > >(n - exchange(checkpoint_time, n));
+        return std::chrono::duration_cast< std::chrono::duration< double > >(n - polyfill::exchange(checkpoint_time, n));
     }
 
     internet_session_iface &              session_;

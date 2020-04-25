@@ -34,7 +34,7 @@ uri_impl::uri_impl() noexcept
 
 uri_impl::uri_impl(uri_impl &&other) noexcept
 : uri_(other.uri_)
-, active_(exchange(other.active_, false))
+, active_(polyfill::exchange(other.active_, false))
 {
 }
 
@@ -137,6 +137,7 @@ auto uri_impl::parse(std::string const &source, error_code &ec) -> error_code &
     check_result(::uriParseSingleUriA(&uri_, source.c_str(), &error_pos), ec);
     if (!ec)
         active_ = true;
+    return ec;
 }
 
 auto uri_impl::normalise_target(error_code &ec) -> void

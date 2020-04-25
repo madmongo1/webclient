@@ -17,6 +17,6 @@
 
 #include "boost/webclient/polyfill/shared_composed_op.hpp"
 
-namespace boost::webclient::polyfill
-{
-}
+namespace boost { namespace webclient { namespace polyfill {
+
+}}}   // namespace boost::webclient::polyfill
