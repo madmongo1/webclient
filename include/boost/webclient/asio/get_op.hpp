@@ -38,6 +38,7 @@
 #include <boost/webclient/polyfill/optional.hpp>
 #include <boost/webclient/polyfill/shared_composed_op.hpp>
 #include <boost/webclient/uri/uri_impl.hpp>
+#include <boost/asio/ssl/error.hpp>
 
 namespace boost { namespace webclient { namespace asio {
 
@@ -200,6 +201,15 @@ struct get_op
 
             if (state.ssl_involved)
             {
+                // Set SNI Hostname (many hosts need this to handshake successfully)
+                if (!SSL_set_tlsext_host_name(state.ssl_stream.native_handle(), state.uri.hostname().c_str()))
+                    this->set_error(error_code(static_cast< int >(::ERR_get_error()), net::error::get_ssl_category()));
+
+                log("Set TLS host name: ", this->error);
+
+                if (this->error)
+                    goto finish;
+
                 yield state.ssl_stream.async_handshake(ssl_stream_type::client, share(self));
                 log("SSL Handshake: ", ec);
                 if (this->set_error(ec))

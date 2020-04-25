@@ -75,6 +75,43 @@ void forty_two_async()
     std::cout << underlined("+------------+") << std::endl;
 }
 
+void forty_two_async_ssl()
+{
+    std::cout << underlined(__func__) << std::endl;
+
+    net::io_context ioc;
+    auto            exec = ioc.get_executor();
+
+    auto session = webclient::internet_session(exec);
+
+    auto                            ec = webclient::error_code();
+    webclient::unique_http_response response;
+
+    webclient::async_get(
+        session, "https://example.com", [&](webclient::error_code ec_, webclient::unique_http_response &&response_) {
+            ec       = ec_;
+            response = std::move(response_);
+        });
+
+    ioc.run();
+
+    if (ec.failed())
+        std::cout << ec << std::endl;
+    else if (response.status_int() != 200)
+    {
+        std::cout << response.status_message();
+    }
+    else
+    {
+        std::cout << response.body();
+    }
+
+    std::cout << "Log:\n";
+    std::cout << response.log();
+
+    std::cout << underlined("+------------+") << std::endl;
+}
+
 void forty_two_sync()
 {
     std::cout << underlined(__func__) << std::endl;
@@ -108,6 +145,7 @@ void forty_two_sync_ssl()
 int main()
 {
     forty_two_async();
+    forty_two_async_ssl();
     forty_two_sync();
     forty_two_sync_ssl();
 }
