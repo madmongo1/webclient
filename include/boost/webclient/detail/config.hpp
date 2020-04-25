@@ -82,7 +82,7 @@
 #   define BOOST_WEBCLIENT_DECL
 #  endif
 #  if !defined(BOOST_WEBCLIENT_SOURCE) && !defined(BOOST_ALL_NO_LIB) && !defined(BOOST_WEBCLIENT_NO_LIB)
-#   define BOOST_LIB_NAME boost_WEBCLIENT
+#   define BOOST_LIB_NAME boost_webclient
 #   if defined(BOOST_ALL_DYN_LINK) || defined(BOOST_WEBCLIENT_DYN_LINK)
 #    define BOOST_DYN_LINK
 #   endif

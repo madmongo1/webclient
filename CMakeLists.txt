@@ -28,7 +28,7 @@ else()
 endif()
 
 
-project(boost_WEBCLIENT VERSION ${BOOST_WEBCLIENT_VERSION} LANGUAGES CXX)
+project(boost_webclient VERSION ${BOOST_WEBCLIENT_VERSION} LANGUAGES CXX)
 
 option(BOOST_WEBCLIENT_STANDALONE "Build boost::webclient as a static standalone library" FALSE)
 
@@ -52,26 +52,27 @@ if(${CMAKE_VERSION} VERSION_GREATER 3.7.2)
     source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/src PREFIX "" FILES ${BOOST_WEBCLIENT_SOURCES})
 endif()
 
-add_library(webclient ${BOOST_WEBCLIENT_HEADERS} ${BOOST_WEBCLIENT_SOURCES})
-set_target_properties(webclient PROPERTIES OUTPUT_NAME boost_webclient)
-add_library(Boost::webclient ALIAS webclient)
-target_link_libraries(webclient PUBLIC Threads::Threads)
+add_library(boost_webclient ${BOOST_WEBCLIENT_HEADERS} ${BOOST_WEBCLIENT_SOURCES})
+set_target_properties(boost_webclient PROPERTIES OUTPUT_NAME boost_webclient)
+set_target_properties(boost_webclient PROPERTIES EXPORT_NAME webclient)
+add_library(Boost::webclient ALIAS boost_webclient)
+target_link_libraries(boost_webclient PUBLIC Threads::Threads)
 
-target_compile_features(webclient PUBLIC cxx_constexpr)
+target_compile_features(boost_webclient PUBLIC cxx_constexpr)
 
-target_include_directories(webclient PUBLIC
+target_include_directories(boost_webclient PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>)
 
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(webclient PUBLIC BOOST_WEBCLIENT_DYN_LINK=1)
+    target_compile_definitions(boost_webclient PUBLIC BOOST_WEBCLIENT_DYN_LINK=1)
 else()
-    target_compile_definitions(webclient PUBLIC BOOST_WEBCLIENT_STATIC_LINK=1)
+    target_compile_definitions(boost_webclient PUBLIC BOOST_WEBCLIENT_STATIC_LINK=1)
 endif()
 
 if(BOOST_WEBCLIENT_STANDALONE)
-    target_compile_features(webclient PUBLIC cxx_std_17)
-    target_compile_definitions(webclient PUBLIC BOOST_WEBCLIENT_STANDALONE)
+    target_compile_features(boost_webclient PUBLIC cxx_std_17)
+    target_compile_definitions(boost_webclient PUBLIC BOOST_WEBCLIENT_STANDALONE)
     add_subdirectory(example)
 elseif(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     #
@@ -94,15 +95,15 @@ elseif(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     if (CMAKE_SYSTEM_NAME MATCHES "[Ll]inux")
         find_package(OpenSSL)
         find_package(uriparser)
-        target_link_libraries(webclient PUBLIC OpenSSL::SSL OpenSSL::Crypto uriparser::uriparser)
+        target_link_libraries(boost_webclient PUBLIC OpenSSL::SSL OpenSSL::Crypto uriparser::uriparser)
     endif()
     if (BOOST_WEBCLIENT_FIND_BOOST)
         find_package(Boost REQUIRED COMPONENTS system)
-        target_link_libraries(webclient PUBLIC Boost::system)
+        target_link_libraries(boost_webclient PUBLIC Boost::system)
     else()
         get_filename_component(BOOST_ROOT ../.. ABSOLUTE)
-        target_include_directories(webclient PUBLIC ${BOOST_ROOT})
-        target_link_directories(webclient PUBLIC ${BOOST_ROOT}/stage/lib)
+        target_include_directories(boost_webclient PUBLIC ${BOOST_ROOT})
+        target_link_directories(boost_webclient PUBLIC ${BOOST_ROOT}/stage/lib)
     endif()
 
     if(BUILD_TESTING)
@@ -131,7 +132,7 @@ elseif(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
             "${version_config}" COMPATIBILITY SameMajorVersion
     )
 
-    configure_file("cmake/boost_WEBCLIENT.pc.in" "${pkg_config}" @ONLY)
+    configure_file("cmake/boost_webclient.pc.in" "${pkg_config}" @ONLY)
 
     configure_package_config_file(
             "cmake/Config.cmake.in"
@@ -139,14 +140,12 @@ elseif(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
             INSTALL_DESTINATION "${config_install_dir}"
     )
 
-    install(TARGETS webclient
+    install(TARGETS boost_webclient
             EXPORT "${targets_export_name}"
             PRIVATE_HEADER DESTINATION "${include_install_dir}"
             ARCHIVE DESTINATION "${lib_install_dir}")
 
     install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/boost DESTINATION ${include_install_dir})
-
-    install(FILES ${interface_hdrs} DESTINATION "${include_install_dir}")
 
     install(
             FILES "${project_config}" "${version_config}"
@@ -168,7 +167,7 @@ elseif(BOOST_SUPERPROJECT_VERSION)
     #
     # Building with Boost superproject cmake
     #
-    target_link_libraries(webclient
+    target_link_libraries(boost_webclient
         PUBLIC
             Boost::assert
             Boost::config
@@ -182,7 +181,7 @@ else()
     # Out-of-tree, non-standalone build
     #
     find_package(Boost COMPONENTS system)
-    target_link_libraries(webclient
+    target_link_libraries(boost_webclient
         PUBLIC
             Boost::system
     )
@@ -196,5 +195,5 @@ endif()
 
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows" OR ${CMAKE_SYSTEM_NAME} STREQUAL "MSYS")
-    target_link_libraries(webclient INTERFACE winhttp)
+    target_link_libraries(boost_webclient INTERFACE winhttp)
 endif()
