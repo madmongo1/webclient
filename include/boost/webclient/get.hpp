@@ -44,15 +44,15 @@ using get_op = boost::webclient::asio::get_op;
 inline auto get(string_view url) -> std::string;
 
 template < class Executor, class CompletionToken >
-BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(CompletionToken, void(error_code, http_response))
+BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(CompletionToken, void(error_code, unique_http_response))
 async_get(basic_internet_session< Executor > &session, string_view url, CompletionToken &&token)
 {
-    return net::async_compose< CompletionToken, void(error_code, http_response) >(
+    return net::async_compose< CompletionToken, void(error_code, unique_http_response) >(
         get_op(session, url), token, session);
 }
 
 template < class Executor, class CompletionToken >
-BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(CompletionToken, void(error_code, http_response))
+BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(CompletionToken, void(error_code, unique_http_response))
 async_get(string_view url, CompletionToken &&token)
 {
     auto& session = get_default_internet_session();

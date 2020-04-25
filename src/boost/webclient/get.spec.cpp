@@ -19,21 +19,34 @@
 
 #include <boost/beast/_experimental/test/handler.hpp>
 #include <catch2/catch.hpp>
+#include "boost/webclient/uri/uri_impl.hpp"
 
 namespace webclient = boost::webclient;
 
 TEST_CASE("boost::webclient::get")
 {
+    SECTION("uriparser")
+    {
+        auto url = std::string("http://example.com/foo/bar.html?x=y&d=a#10");
+        auto parser = webclient::uri::uri_impl();
+        webclient::error_code ec;
+        CHECK(parser.parse(url, ec).message() == "Success");
+        auto target = parser.target_as_string(ec);
+        CHECK(ec.message() == "Success");
+        CHECK(target == "/foo/bar.html?x=y&d=a");
+    }
+
     SECTION("async")
     {
         webclient::net::io_context ioc;
 
         webclient::internet_session session(ioc.get_executor());
         webclient::async_get(
-            session, "http://example.com/", [](webclient::error_code ec, webclient::http_response response) {
+            session, "http://example.com/", [](webclient::error_code ec, webclient::unique_http_response response) {
+                INFO("log output: " << response.log());
                 CHECK(ec.message() == "Success");
-                CHECK(response.header().status_code() == 200);
-                CHECK(response.body() == "");
+                CHECK(response.status_int() == 200);
+                CHECK(!response.body().empty());
             });
 
         boost::beast::test::run(ioc);

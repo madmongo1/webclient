@@ -54,13 +54,15 @@ struct uri_impl
 
     auto port() const -> string_view { return to_string_view(uri_.portText); }
 
+    auto query() const -> string_view { return to_string_view(uri_.query); }
+
     auto scheme() const -> string_view { return to_string_view(uri_.scheme); }
 
     auto hostname() const -> std::string;
 
     auto parse(std::string const &source, error_code &ec) -> error_code &;
 
-    auto target_as_string() const -> std::string;
+    auto target_as_string(error_code& ec) const -> std::string;
 
     ::UriUriA uri_;
     bool      active_;
@@ -68,7 +70,7 @@ struct uri_impl
 
 auto deduce_http_service(uri_impl const &uri) -> std::string;
 
-auto secure_transport_indicated(uri_impl const& uri, std::uint16_t port)->bool;
+auto secure_transport_indicated(uri_impl const &uri, std::uint16_t port) -> bool;
 
 }}}   // namespace boost::webclient::uri
 

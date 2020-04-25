@@ -19,10 +19,16 @@
 #define BOOST_WEBCLIENT_ASIO__GET_OP_HPP
 
 #include <boost/asio/coroutine.hpp>
-#include <boost/asio/ip/tcp.hpp>
+#include <boost/beast/core/flat_static_buffer.hpp>
 #include <boost/beast/core/tcp_stream.hpp>
+#include <boost/beast/http/empty_body.hpp>
+#include <boost/beast/http/message.hpp>
+#include <boost/beast/http/read.hpp>
+#include <boost/beast/http/string_body.hpp>
+#include <boost/beast/http/write.hpp>
 #include <boost/beast/ssl/ssl_stream.hpp>
 #include <boost/webclient/asio/basic_internet_session.hpp>
+#include <boost/webclient/asio/config.hpp>
 #include <boost/webclient/asio/has_error_code.hpp>
 #include <boost/webclient/asio/has_resolver.hpp>
 #include <boost/webclient/asio/has_timeout.hpp>
@@ -32,12 +38,6 @@
 #include <boost/webclient/polyfill/optional.hpp>
 #include <boost/webclient/polyfill/shared_composed_op.hpp>
 #include <boost/webclient/uri/uri_impl.hpp>
-#include <boost/beast/http/write.hpp>
-#include <boost/beast/http/read.hpp>
-#include <boost/beast/http/message.hpp>
-#include <boost/beast/http/empty_body.hpp>
-#include <boost/beast/http/string_body.hpp>
-#include <boost/beast/core/flat_static_buffer.hpp>
 
 namespace boost { namespace webclient { namespace asio {
 
@@ -48,25 +48,42 @@ struct get_op_state
     : session_(session.iface())
     , ssl_stream(session.get_executor(), session.ssl_context())
     , input_uri(uri.begin(), uri.end())
-    , response(make_unique< http_response >())
+    , uri()
+    , request()
+    , read_buffer()
+    , checkpoint_time(now())
+    , response()
+    , response_view(response.native_view())
+    , ssl_involved(false)
     {
     }
 
-    using tcp_stream_type = boost::beast::tcp_stream;
-    using ssl_stream_type = boost::beast::ssl_stream< tcp_stream_type >;
-    using request_type = boost::beast::http::request<boost::beast::http::empty_body>;
-    using response_type = boost::beast::http::response<boost::beast::http::string_body>;
-    using read_buffer_type = boost::beast::flat_static_buffer<1024*1024>;
+    using tcp_stream_type  = boost::beast::tcp_stream;
+    using ssl_stream_type  = boost::beast::ssl_stream< tcp_stream_type >;
+    using request_type     = http::request< http::empty_body >;
+    using response_type    = http::response< http::string_body >;
+    using read_buffer_type = boost::beast::flat_static_buffer< 1024 * 1024 >;
 
     auto tcp_stream() -> tcp_stream_type & { return ssl_stream.next_layer(); }
 
-    internet_session_iface &session_;
-    ssl_stream_type         ssl_stream;
-    std::string             input_uri;
-    uri::uri_impl           uri;
-    request_type            request;
-    unique_http_response    response;
-    bool                    ssl_involved = false;
+    static auto now() -> std::chrono::system_clock::time_point { return std::chrono::system_clock::now(); }
+    auto        elapsed() -> std::chrono::duration< double >
+    {
+        auto const n = now();
+        return std::chrono::duration_cast< std::chrono::duration< double > >(n - exchange(checkpoint_time, n));
+    }
+
+    internet_session_iface &              session_;
+    ssl_stream_type                       ssl_stream;
+    std::string                           input_uri;
+    uri::uri_impl                         uri;
+    request_type                          request;
+    read_buffer_type                      read_buffer;
+    std::chrono::system_clock::time_point checkpoint_time;
+
+    unique_http_response               response;
+    unique_http_response::native_type &response_view;
+    bool                               ssl_involved = false;
 
     // temmporary state
     net::ip::tcp::resolver::results_type::const_iterator current_resolve_result;
@@ -80,7 +97,7 @@ struct get_op
 {
     using resolver_type         = has_resolver::resolver_type;
     using resolver_results_type = resolver_type::results_type;
-    using ssl_stream_type = get_op_state::ssl_stream_type;
+    using ssl_stream_type       = get_op_state::ssl_stream_type;
 
     using has_resolver< get_op >::operator();
     using has_timeout< get_op >:: operator();
@@ -94,9 +111,25 @@ struct get_op
     {
     }
 
-    void on_timeout() { this->cancel_resolver(); }
+    void on_timeout()
+    {
+        this->cancel_resolver();
+        log("timeout");
+    }
 
-    void on_resolved() { this->cancel_timeout(); }
+    void on_resolved(error_code const &ec)
+    {
+        log("resolved: ", ec);
+        this->cancel_timeout();
+    }
+
+    template < class... Args >
+    void log(Args const &... args)
+    {
+        auto &state = *(this->state_);
+        auto  ct    = state.checkpoint_time;   // argument order
+        state.response.log(ct, " : ", args..., " : after ", state.elapsed());
+    }
 
     template < class Self >
     void operator()(Self &self, error_code ec = {}, std::size_t bytes_transferred = 0)
@@ -108,10 +141,12 @@ struct get_op
 #include <boost/asio/yield.hpp>
         reenter(this) for (;;)
         {
-            if (state.uri.parse(state.input_uri, ec).value())
+            state.uri.parse(state.input_uri, ec);
+            log("parse: ", ec);
+            if (this->set_error(ec))
             {
-                yield net::post(bind_front_handler(std::move(self), ec));
-                return self.complete(ec, std::move(*state.response));
+                yield net::post(std::move(self));
+                goto finish;
             }
 
             yield share(self);
@@ -127,26 +162,27 @@ struct get_op
                 yield;
 
             if (this->error)
-                return self.complete(this->error, std::move(*state.response));
+            {
+                state.response.log("resolve failure: ", this->error);
+                goto finish;
+            }
 
             // connect the socket
 
             state.current_resolve_result = this->resolved_endpoints().begin();
             while (state.current_resolve_result != this->resolved_endpoints().end())
             {
-                yield
-                {
-                    state.tcp_stream().expires_after(state.session_.connect_timeout());
-                    state.tcp_stream().async_connect(state.current_resolve_result->endpoint(), share(self));
-                    // if the connect is successful, we can exit the loop early.
-                    if (!ec)
-                        goto connected;
-                }
+                state.tcp_stream().expires_after(state.session_.connect_timeout());
+                yield state.tcp_stream().async_connect(state.current_resolve_result->endpoint(), share(self));
+                state.response.log("connect to: ", state.current_resolve_result->endpoint(), " result: ", ec);
+                // if the connect is successful, we can exit the loop early.
+                if (!ec)
+                    goto connected;
                 ++state.current_resolve_result;
             }
-            // if we leave the loop
-
-            self.complete(ec, std::move(*state.response));
+            // if we leave the loop, make sure there is an error of some kind
+            this->set_error(ec);
+            goto finish;
 
         connected:
 
@@ -162,36 +198,76 @@ struct get_op
             //
 
             if (state.ssl_involved)
+            {
                 yield state.ssl_stream.async_handshake(ssl_stream_type::client, share(self));
+                if (this->set_error(ec))
+                    goto finish;
+            }
 
             //
             // send the request
             //
             state.request.version(11);
             state.request.keep_alive(true);
-            state.request.target(state.uri.target_as_string());
+            state.request.target(state.uri.target_as_string(ec));
+            state.response.log("encoding target: ", ec, " yields target [", state.request.target(), ']');
+            if (this->set_error(ec))
+                goto finish;
             state.request.set("host", state.uri.hostname());
-            state.request.method(boost::beast::http::verb::get);
+            state.request.method(http::verb::get);
 
             if (state.ssl_involved)
-                yield boost::beast::http::async_write(state.ssl_stream, state.request, share(self));
+                yield http::async_write(state.ssl_stream, state.request, share(self));
             else
-                yield boost::beast::http::async_write(state.tcp_stream(), state.request, share(self));
-
-
+                yield http::async_write(state.tcp_stream(), state.request, share(self));
+            log("Write complete: ", ec);
+            if (ec)
+                return self.complete(ec, std::move(state.response));
 
             //
-            // receive the response
+            // receive the header
             //
-            /*
+
+            // (todo? resolve chunked bodies?)
+        read_again:
+            state.tcp_stream().expires_after(std::chrono::seconds(30));
+            state.response_view.body().clear();
+            state.response_view.clear();
             if (state.ssl_involved)
-                yield boost::beast::http::async_read_header(state.ssl_stream, state.read_buffer, state.response, share(this));
+                yield http::async_read(state.ssl_stream, state.read_buffer, state.response_view, share(self));
             else
-                yield boost::beast::http::async_read_header(state.tcp_stream(), state.read_buffer, state.response, share(this));
-*/
-            ec = error::not_implemented;
+                yield http::async_read(state.tcp_stream(), state.read_buffer, state.response_view, share(self));
+            log("Response complete : ",
+                ec,
+                "[response ",
+                state.response_view.result_int(),
+                " - ",
+                state.response_view.reason(),
+                ']');
+            if (this->set_error(ec))
+                goto finish;
 
-            return self.complete(ec, std::move(*state.response));
+            //
+            // class 100 responses
+            //
+            if (state.response_view.result() == http::status::continue_)
+                goto read_again;
+            else if (state.response_view.result() == http::status::switching_protocols)
+                goto finish;
+            else if (state.response_view.result() == http::status::processing)
+                goto read_again;
+            else if (state.response_view.result_int() >= 200 and state.response_view.result_int() < 300)
+                goto finish;
+            else if (state.response_view.result_int() >= 400)
+                goto finish;
+            //
+            // redirect class. Some redirects might be possible within this connection,
+            // but for now, let's ignore redirects
+            //
+
+        finish:
+            log("Operation complete: ", this->error);
+            return self.complete(this->error, std::move(state.response));
         }
 #include <boost/asio/unyield.hpp>
     }

@@ -54,7 +54,7 @@ struct has_resolver
         results_.emplace(std::move(results));
 
         auto &this_ = *static_cast< Derived * >(this);
-        this_.on_resolved();
+        this_.on_resolved(ec);
 
         auto &has_err = static_cast< has_error_code & >(this_);
         this_(self, has_err.set_error(ec));
@@ -63,7 +63,7 @@ struct has_resolver
     resolver_type::results_type const &resolved_endpoints() const { return *results_; }
 
     // customisation point
-    void on_resolved() {}
+    void on_resolved(error_code const&) {}
 
   private:
     resolver_type                           resolver_;

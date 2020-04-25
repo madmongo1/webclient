@@ -17,7 +17,9 @@
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/webclient/polyfill/exchange.hpp>
+#include <boost/webclient/uri/error.hpp>
 #include <boost/webclient/uri/uri_impl.hpp>
+#include <boost/webclient/uri/query_list.hpp>
 #include <iomanip>
 #include <iterator>
 #include <sstream>
@@ -50,7 +52,9 @@ uri_impl &uri_impl::operator=(uri_impl &&other) noexcept
 uri_impl::~uri_impl()
 {
     if (active_)
+    {
         ::uriFreeUriMembersA(&uri_);
+    }
 }
 
 std::string encode(UriIp4Struct const &ip6)
@@ -130,18 +134,23 @@ auto uri_impl::parse(std::string const &source, error_code &ec) -> error_code &
     if (active_)
         ::uriFreeUriMembersA(&uri_);
     const char *error_pos = nullptr;
-    auto        err       = ::uriParseSingleUriA(&uri_, source.c_str(), &error_pos);
-    if (err != URI_SUCCESS)
-        ec.assign(err, uri_error_category());
-    else
-        ec.clear();
-    return ec;
+    return check_result(::uriParseSingleUriA(&uri_, source.c_str(), &error_pos), ec);
 }
 
-auto uri_impl::target_as_string() const -> std::string
+auto uri_impl::target_as_string(error_code &ec) const -> std::string
 {
     std::string result;
 
+    for (auto first = uri_.pathHead; first; first = first->next)
+    {
+        result += '/';
+        result.append(first->text.first, first->text.afterLast);
+    }
+
+    auto ql = query_list();
+    ql.parse(query(), ec);
+    if (!ec)
+        ql.append_to(result, ec);
     return result;
 }
 

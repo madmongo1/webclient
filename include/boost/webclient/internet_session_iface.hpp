@@ -29,6 +29,7 @@ struct internet_session_iface
 
     internet_session_iface()
     : resolve_timeout_(std::chrono::seconds(10))
+    , connect_timeout_(std::chrono::seconds(10))
     {
     }
 

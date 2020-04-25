@@ -64,6 +64,8 @@ static auto uri_error_category() -> error_category const &
     return cat_;
 }
 
+auto check_result(int result, error_code& ec) -> error_code&;
+
 }}}   // namespace boost::webclient::uri
 
 #endif   // BOOST_WEBCLIENT_URI__ERROR__HPP

@@ -59,12 +59,9 @@ struct has_timeout
         timer_.async_wait(boost::beast::bind_front_handler(std::move(self), timeout_event()));
     }
 
-    auto cancel_timeout() -> void
-    {
-        timer_.cancel();
-    }
+    auto cancel_timeout() -> void { timer_.cancel(); }
 
-    template<class Self>
+    template < class Self >
     void operator()(Self &self, timeout_event, error_code ec)
     {
         auto &this_ = *static_cast< Derived * >(this);
@@ -87,11 +84,9 @@ struct has_timeout
     // customisation point
     auto on_timeout() -> void {}
 
-
-
   private:
-    net::high_resolution_timer timer_;
-    bool                       timer_outstanding_ = false;
+    net::high_resolution_timer              timer_;
+    bool                                    timer_outstanding_ = false;
 };
 
 }}}   // namespace boost::webclient::asio

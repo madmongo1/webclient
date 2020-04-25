@@ -15,3 +15,32 @@
 // Many thanks to Vinnie Falco for continuous mentoring and support
 //
 
+#ifndef BOOST_WEBCLIENT_ASIO__CONFIG__HPP
+#define BOOST_WEBCLIENT_ASIO__CONFIG__HPP
+
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/beast/http/error.hpp>
+#include <boost/beast/http/status.hpp>
+#include <boost/webclient/print_to.hpp>
+#include <string>
+
+namespace boost { namespace webclient {
+namespace asio {
+
+namespace http  = boost::beast::http;
+namespace beast = boost::beast;
+
+}   // namespace asio
+
+inline void print_to(std::string &str, net::ip::tcp::endpoint const &ep)
+{
+    print_to(str, "[tcp endpoint ");
+    print_to(str, ep.address().to_string());
+    print_to(str, ':');
+    print_to(str, ep.port());
+    print_to(str, ']');
+}
+
+}}   // namespace boost::webclient
+
+#endif   // BOOST_WEBCLIENT_ASIO__CONFIG__HPP
