@@ -41,7 +41,7 @@ struct basic_internet_connection_pool
 
 }}   // namespace boost::webclient
 
-#ifdef BOOST_PLAT_WINDOWS_DESKTOP
+#if BOOST_PLAT_WINDOWS_DESKTOP
 #include <boost/webclient/windows/connection_pool_impl.hpp>
 #else
 #include <boost/webclient/asio/connection_pool_impl.hpp>
@@ -49,7 +49,7 @@ struct basic_internet_connection_pool
 
 namespace boost { namespace webclient {
 
-#ifdef BOOST_PLAT_WINDOWS_DESKTOP
+#if BOOST_PLAT_WINDOWS_DESKTOP
 using internet_connection_pool = basic_internet_connection_pool< windows::connection_pool_impl >;
 #else
 using internet_connection_pool = basic_internet_connection_pool< asio::connection_pool_impl >;

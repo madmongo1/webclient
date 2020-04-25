@@ -22,7 +22,7 @@
 #include <boost/webclient/polyfill/make_unique.hpp>
 #include <string>
 
-#ifdef BOOST_PLAT_WINDOWS_DESKTOP
+#if BOOST_PLAT_WINDOWS_DESKTOP
 #include <boost/webclient/windows/get_op.hpp>
 #else
 #include <boost/webclient/asio/get_op.hpp>
@@ -30,7 +30,7 @@
 
 namespace boost { namespace webclient {
 
-#ifdef BOOST_PLAT_WINDOWS_DESKTOP
+#if BOOST_PLAT_WINDOWS_DESKTOP
 using get_op = boost::webclient::windows::get_op;
 #else
 using get_op = boost::webclient::asio::get_op;

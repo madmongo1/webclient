@@ -47,7 +47,7 @@ struct basic_http_response_impl
 
 }}   // namespace boost::webclient
 
-#ifdef BOOST_PLAT_WINDOWS_DESKTOP
+#if BOOST_PLAT_WINDOWS_DESKTOP
 #include <boost/webclient/windows/http_response.hpp>
 #else
 #include <boost/webclient/asio/http_response.hpp>

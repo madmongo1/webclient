@@ -13,7 +13,7 @@
 #include <boost/asio/executor.hpp>
 #include <boost/webclient/config.hpp>
 
-#ifdef BOOST_PLAT_WINDOWS_DESKTOP
+#if BOOST_PLAT_WINDOWS_DESKTOP
 #include <boost/webclient/windows/basic_internet_session.hpp>
 #else
 #include <boost/webclient/asio/basic_internet_session.hpp>
@@ -21,7 +21,7 @@
 
 namespace boost { namespace webclient {
 
-#ifdef BOOST_PLAT_WINDOWS_DESKTOP
+#if BOOST_PLAT_WINDOWS_DESKTOP
 template < class Executor >
 using basic_internet_session = windows::basic_internet_session< Executor >;
 #else
