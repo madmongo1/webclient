@@ -8,29 +8,53 @@
 // Official repository: https://github.com/madmongo1/webclient
 //
 
-#include <boost/webclient/internet_session.hpp>
-#include <boost/webclient/get.hpp>
-#include <iostream>
 #include <boost/asio/io_context.hpp>
+#include <boost/webclient/get.hpp>
+#include <boost/webclient/internet_session.hpp>
+#include <iostream>
 
-namespace net = boost::asio;
+namespace net       = boost::asio;
 namespace webclient = boost::webclient;
+
+struct underlined
+{
+    underlined(const char *p)
+    : psz(p)
+    {
+    }
+    
+    friend auto operator<<(std::ostream& os, underlined const& u) -> std::ostream&
+    {
+        auto sz = u.psz ? std::strlen(u.psz) : 0;
+        if (sz)
+        {
+            os.write(u.psz, sz);
+            os << std::endl;
+            os << std::string(sz, '=');
+        }
+        return os;
+    }
+    
+    const char *psz;
+};
 
 void forty_two_async()
 {
+    std::cout << underlined(__func__) << std::endl;
+
     net::io_context ioc;
-    auto exec = ioc.get_executor();
+    auto            exec = ioc.get_executor();
 
     auto session = webclient::internet_session(exec);
 
-    auto ec = webclient::error_code();
+    auto                            ec = webclient::error_code();
     webclient::unique_http_response response;
 
-    webclient::async_get(session, "http://example.com", [&](webclient::error_code ec_, webclient::unique_http_response&& response_)
-    {
-        ec = ec_;
-        response = std::move(response_);
-    });
+    webclient::async_get(
+        session, "http://example.com", [&](webclient::error_code ec_, webclient::unique_http_response &&response_) {
+            ec       = ec_;
+            response = std::move(response_);
+        });
 
     ioc.run();
 
@@ -47,24 +71,43 @@ void forty_two_async()
 
     std::cout << "Log:\n";
     std::cout << response.log();
+
+    std::cout << underlined("+------------+") << std::endl;
 }
 
 void forty_two_sync()
 {
+    std::cout << underlined(__func__) << std::endl;
     try
     {
         std::cout << webclient::get("http://example.com").body() << std::endl;
     }
-    catch(webclient::system_error& se)
+    catch (webclient::system_error &se)
     {
         std::cout << "error:\n";
         std::cout << se.what();
     }
+    std::cout << underlined("+------------+") << std::endl;
+}
 
+void forty_two_sync_ssl()
+{
+    std::cout << underlined(__func__) << std::endl;
+    try
+    {
+        std::cout << webclient::get("https://example.com").body() << std::endl;
+    }
+    catch (webclient::system_error &se)
+    {
+        std::cout << "error:\n";
+        std::cout << se.what();
+    }
+    std::cout << underlined("+------------+") << std::endl;
 }
 
 int main()
 {
-    forty_two_sync();
     forty_two_async();
+    forty_two_sync();
+    forty_two_sync_ssl();
 }
