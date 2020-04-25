@@ -35,11 +35,10 @@ struct basic_internet_session_impl : internet_session_iface
 
     basic_internet_session_impl(executor_type &&exec)
     : exec_(std::move(exec))
-    , ssl_context_(ssl_context_type::tlsv13_client)
+    , ssl_context_(ssl_context_type::tlsv12_client)
     {
-        ssl_context_.set_options(ssl_context_type::default_workarounds | ssl_context_type::no_tlsv1 |
-                                 ssl_context_type::single_dh_use);
         ssl_context_.set_default_verify_paths();
+        ssl_context_.set_verify_mode(ssl_context_type::verify_none);
     }
 
     auto get_executor() const -> executor_type { return exec_; }
