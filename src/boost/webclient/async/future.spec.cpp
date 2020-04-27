@@ -26,7 +26,23 @@ TEST_CASE("boost::webclient::async::future")
     net::io_context ioc;
 
     auto p = async::promise< std::string >();
+
+    SECTION("promise met before future taken")
+    {
+        p.set_value("Hello");
+        auto f = p.get_future();
+
+        f.async_wait([](async::future_result_type<std::string> s) {
+
+            REQUIRE(s.has_value());
+            CHECK(s.value() == "Hello");
+        });
+
+        ioc.run();
+    }
+
     auto f = p.get_future();
+
 
     SECTION("value available prior to wait")
     {

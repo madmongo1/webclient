@@ -19,12 +19,14 @@ namespace boost { namespace webclient { namespace async {
 template < class T >
 promise< T >::promise()
 : impl_(std::make_shared< detail::future_state_impl< T > >())
+, future_impl_(impl_)
 {
 }
 
 template < class T >
 promise< T >::promise(promise &&other) noexcept
 : impl_(std::move(other.impl_))
+, future_impl_(std::move(other.future_impl_))
 {
 }
 
@@ -32,7 +34,8 @@ template < class T >
 auto promise< T >::operator=(promise &&other) noexcept -> promise &
 {
     destroy();
-    impl_ = std::move(other.impl_);
+    impl_        = std::move(other.impl_);
+    future_impl_ = std::move(other.future_impl_);
     return *this;
 }
 
@@ -69,7 +72,7 @@ auto promise< T >::set_exception(std::exception_ptr ep) -> void
 template < class T >
 auto promise< T >::get_future() -> future< T >
 {
-    return future< T >(impl_);
+    return future< T >(std::move(future_impl_));
 }
 
 template < class T >
@@ -80,5 +83,7 @@ auto promise< T >::destroy() -> void
         impl_->set_value(error_code(net::error::operation_aborted));
         impl_.reset();
     }
+    if (future_impl_)
+        future_impl_.reset();
 }
 }}}   // namespace boost::webclient::async

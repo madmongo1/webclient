@@ -76,6 +76,7 @@ struct promise
     void destroy();
 
     impl_type impl_;
+    impl_type future_impl_;
 };
 
 }}}   // namespace boost::webclient::async
