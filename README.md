@@ -23,11 +23,16 @@ Branch          | Travis | Appveyor | Azure Pipelines | codecov.io | Docs | Matr
 # Structural thoughts
 
 | component     | purpose       |
-+---------------|---------------|
-| internet_session | provide execution environment, default settings and connection caches |
+| ------------- | ------------- |
+| internet_session | Provides execution environment, default settings and connection caches |
+| http_connection_pool | Http clients *should* limit the number of concurrent connections per host |
+| cookie_jar       | internet_session will maintain a cookie jar which http_requst tasks may or may not use |
 | http_task        | Encapsulates the high level task to be carried out. e.g. a GET which may or may not tolerate redirects |
 | http_request     | An indiviual request / response cycle against a host, possibly on a reusable connection |
 
+Users should be free to create or specify an `internet_session` with each request, and should be allowed not
+to specify one. If an internet_session is not specified, a default session, shared across the process
+is made available automatically.
 
 ## CMake
 
