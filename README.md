@@ -7,6 +7,28 @@ Branch          | Travis | Appveyor | Azure Pipelines | codecov.io | Docs | Matr
 
 ## This is **NOT** an official Boost library.
 
+## Aims of the Library
+
+* Provide a one-stop high level c++ interface to all common web protocols from the point of view of the client
+* Think libCurl in native c++
+* Provide both synchronous and asynchronous interfaces to all operations
+* Based on, and fully compatible with, the ASIO executor model
+
+## Design Considerations
+
+* When building for controlled platforms, use the native, vendor-approved APIs internally in order not to hinder publishing
+* When building on uncontrolled platforms (or by specific build switches), use ASIO and Boost Beast as underlying technologies
+* Whichever underlying API is selected, provide a seamless homogeneous interface to users.
+
+# Structural thoughts
+
+| component     | purpose       |
++---------------|---------------|
+| internet_session | provide execution environment, default settings and connection caches |
+| http_task        | Encapsulates the high level task to be carried out. e.g. a GET which may or may not tolerate redirects |
+| http_request     | An indiviual request / response cycle against a host, possibly on a reusable connection |
+
+
 ## CMake
 
     cmake -G "Visual Studio 16 2019" -A Win32 -B bin -DCMAKE_TOOLCHAIN_FILE=cmake/toolchains/msvc.cmake
