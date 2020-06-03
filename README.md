@@ -13,6 +13,9 @@ Branch          | Travis | Appveyor | Azure Pipelines | codecov.io | Docs | Matr
 * Think libCurl in native c++
 * Provide both synchronous and asynchronous interfaces to all operations
 * Based on, and fully compatible with, the ASIO executor model
+* Modelled on the very popular python requests library
+* .netrc support
+
 
 ## Design Considerations
 
